@@ -1,4 +1,4 @@
-module github.com/fenekdev/go-twitter/auth
+module github.com/fenekdev/go-twitter/sso
 
 go 1.22.2
 
