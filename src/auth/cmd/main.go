@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import "github.com/fenekdev/go-twitter/auth/config"
 
 func main() {
-	fmt.Println("Auth")
+	cfg := config.MustLoad()
+
+	log := setupLogger(cfg.Env)
 }
