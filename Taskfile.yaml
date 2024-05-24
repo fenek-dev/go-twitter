@@ -1,0 +1,35 @@
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task: auth
+
+  auth:
+    desc: "Run auth service"
+    cmds:
+      - go run src/auth/cmd/main.go
+
+  generate:
+    aliases:
+      - gen
+    desc: "Generate code from proto files"
+    cmds:
+      - protoc -I proto proto/*.proto --go_out=./src/auth/protogen/ --go_opt=paths=source_relative --go-grpc_out=./src/auth/protogen/ --go-grpc_opt=paths=source_relative
+
+  db-up:
+    aliases:
+      - db
+    desc: "Docker up db container"
+    cmds:
+      - docker-compose -f=db/docker-compose.yaml -p=pg_twitter up
+
+  db-down:
+    desc: "Docker down db container"
+    cmds:
+      - docker-compose -f=db/docker-compose.yaml -p=pg_twitter down
+
+  db-migrate:
+    desc: "Migrate db schema"
+    cmds:
+      - migrate -database "postgres://user:password@localhost:5432/twitter?sslmode=disable" -path db/migrations up
