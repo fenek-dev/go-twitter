@@ -2,9 +2,9 @@ package grpc
 
 import (
 	"context"
-	"errors"
 
-	ssov1 "github.com/fenekdev/go-twitter/auth/protogen"
+	ssov1 "github.com/fenek-dev/go-twitter/src/sso/protogen"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -51,9 +51,9 @@ func (s *serverAPI) Login(
 
 	token, err := s.auth.Login(ctx, in.GetEmail(), in.GetPassword(), int(in.GetAppId()))
 	if err != nil {
-		if errors.Is(err, auth.ErrInvalidCredentials) {
-			return nil, status.Error(codes.InvalidArgument, "invalid email or password")
-		}
+		// if errors.Is(err, auth.ErrInvalidCredentials) {
+		// 	return nil, status.Error(codes.InvalidArgument, "invalid email or password")
+		// }
 
 		return nil, status.Error(codes.Internal, "failed to login")
 	}
@@ -75,9 +75,9 @@ func (s *serverAPI) Register(
 
 	uid, err := s.auth.RegisterNewUser(ctx, in.GetEmail(), in.GetPassword())
 	if err != nil {
-		if errors.Is(err, storage.ErrUserExists) {
-			return nil, status.Error(codes.AlreadyExists, "user already exists")
-		}
+		// if errors.Is(err, storage.ErrUserExists) {
+		// 	return nil, status.Error(codes.AlreadyExists, "user already exists")
+		// }
 
 		return nil, status.Error(codes.Internal, "failed to register user")
 	}
