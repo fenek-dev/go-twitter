@@ -1,9 +1,13 @@
 package main
 
-import "github.com/fenekdev/go-twitter/auth/config"
+import (
+	"github.com/fenek-dev/go-twitter/src/sso/config"
+)
 
 func main() {
 	cfg := config.MustLoad()
 
-	log := setupLogger(cfg.Env)
+	log := config.SetupLogger(cfg.Env)
+
+	log.Debug("sso")
 }
