@@ -1,4 +1,5 @@
 env: "local"
+db_url: "postgres://user:password@localhost:5432/twitter"
 grpc:
   port: 44044
   timeout: 10h
