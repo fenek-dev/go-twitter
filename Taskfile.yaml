@@ -3,12 +3,12 @@ version: "3"
 tasks:
   default:
     cmds:
-      - task: auth
+      - task: sso
 
-  auth:
+  sso:
     desc: "Run auth service"
     cmds:
-      - go run src/auth/cmd/main.go
+      - go run src/sso/cmd/main.go --config=src/sso/config/config_local.yaml
 
   generate:
     aliases:
