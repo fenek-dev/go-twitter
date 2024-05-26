@@ -31,7 +31,7 @@ func (s *Storage) SaveUser(ctx context.Context, username string, passHash []byte
 	const op = "storage.pg.SaveUser"
 
 	var usrname string
-	err := s.db.QueryRow(ctx, "INSERT INTO users(username, password) VALUES(?, ?) RETURNING username", username, passHash).Scan(&usrname)
+	err := s.db.QueryRow(ctx, "INSERT INTO users(username, password) VALUES($1, $2) RETURNING username", username, passHash).Scan(&usrname)
 
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", op, err)
@@ -44,8 +44,8 @@ func (s *Storage) User(ctx context.Context, username string) (models.User, error
 	const op = "storage.pg.User"
 
 	var user models.User
-	err := s.db.QueryRow(ctx, "SELECT username, password FROM users WHERE username = ?", username).Scan(&user)
-
+	rows, _ := s.db.Query(ctx, "SELECT * FROM users WHERE username = $1", username)
+	user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
 	if err != nil {
 		return user, fmt.Errorf("%s: %w", op, err)
 	}

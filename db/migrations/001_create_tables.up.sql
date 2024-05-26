@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(30) UNIQUE NOT NULL PRIMARY KEY,
-  description VARCHAR(255),
+  description VARCHAR(255) NOT NULL DEFAULT '',
   password VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
