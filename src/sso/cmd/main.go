@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 
+	app "github.com/fenek-dev/go-twitter/src/sso/app/grpc"
 	"github.com/fenek-dev/go-twitter/src/sso/config"
+	"github.com/fenek-dev/go-twitter/src/sso/internal/services/auth"
 	"github.com/fenek-dev/go-twitter/src/sso/storage/pg"
 )
 
@@ -14,5 +16,9 @@ func main() {
 
 	log := config.SetupLogger(cfg.Env)
 
-	log.Debug("sso")
+	auth_service := auth.New(log, storage, cfg.TokenTTL, cfg.Secret)
+
+	grpc_server := app.New(log, auth_service, cfg.GRPC.Port)
+
+	grpc_server.MustRun()
 }

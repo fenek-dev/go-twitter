@@ -20,38 +20,41 @@ var (
 type UserStorage interface {
 	SaveUser(
 		ctx context.Context,
-		email string,
+		username string,
 		passHash []byte,
-	) (uid int64, err error)
-	User(ctx context.Context, email string) (models.User, error)
+	) (usrname string, err error)
+	User(ctx context.Context, username string) (models.User, error)
 }
 
 type Auth struct {
 	log         *slog.Logger
 	userStorage UserStorage
 	tokenTTL    time.Duration
+	secret      string
 }
 
 func New(
 	log *slog.Logger,
 	userStorage UserStorage,
 	tokenTTL time.Duration,
+	secret string,
 ) *Auth {
 	return &Auth{
 		userStorage: userStorage,
 		log:         log,
 		tokenTTL:    tokenTTL,
+		secret:      secret,
 	}
 }
 
 // RegisterNewUser registers new user in the system and returns user ID.
 // If user with given username already exists, returns error.
-func (a *Auth) RegisterNewUser(ctx context.Context, email string, pass string) (int64, error) {
+func (a *Auth) RegisterNewUser(ctx context.Context, username string, pass string) (string, error) {
 	const op = "Auth.RegisterNewUser"
 
 	log := a.log.With(
 		slog.String("op", op),
-		slog.String("email", email),
+		slog.String("username", username),
 	)
 
 	log.Info("registering user")
@@ -60,35 +63,34 @@ func (a *Auth) RegisterNewUser(ctx context.Context, email string, pass string) (
 	if err != nil {
 		log.Error("failed to generate password hash", sl.Err(err))
 
-		return 0, fmt.Errorf("%s: %w", op, err)
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
-	id, err := a.userStorage.SaveUser(ctx, email, passHash)
+	urname, err := a.userStorage.SaveUser(ctx, username, passHash)
 	if err != nil {
 		log.Error("failed to save user", sl.Err(err))
 
-		return 0, fmt.Errorf("%s: %w", op, err)
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
-	return id, nil
+	return urname, nil
 }
 
 func (a *Auth) Login(
 	ctx context.Context,
-	email string,
+	username string,
 	password string,
-	secret string,
 ) (string, error) {
 	const op = "Auth.Login"
 
 	log := a.log.With(
 		slog.String("op", op),
-		slog.String("username", email),
+		slog.String("username", username),
 	)
 
 	log.Info("attempting to login user")
 
-	user, err := a.userStorage.User(ctx, email)
+	user, err := a.userStorage.User(ctx, username)
 	if err != nil {
 		// if errors.Is(err, storage.ErrUserNotFound) {
 		// 	a.log.Warn("user not found", sl.Err(err))
@@ -110,7 +112,7 @@ func (a *Auth) Login(
 	log.Info("user logged in successfully")
 
 	// Создаём токен авторизации
-	token, err := lib.NewToken(user, secret, a.tokenTTL)
+	token, err := lib.NewToken(user, a.secret, a.tokenTTL)
 	if err != nil {
 		a.log.Error("failed to generate token", sl.Err(err))
 
