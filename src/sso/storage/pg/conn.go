@@ -52,3 +52,7 @@ func (s *Storage) User(ctx context.Context, username string) (models.User, error
 
 	return user, nil
 }
+
+func (s *Storage) Stop(ctx context.Context) {
+	s.db.Close(ctx)
+}

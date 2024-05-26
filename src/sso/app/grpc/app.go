@@ -48,10 +48,18 @@ func (a *App) Run() error {
 
 	a.log.Info("grpc server started", slog.String("addr", l.Addr().String()))
 
-	// Запускаем обработчик gRPC-сообщений
 	if err := a.gRPCServer.Serve(l); err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	return nil
+}
+
+func (a *App) Stop() {
+	const op = "grpcapp.Stop"
+
+	a.log.With(slog.String("op", op)).
+		Info("stopping gRPC server", slog.Int("port", a.port))
+
+	a.gRPCServer.GracefulStop()
 }

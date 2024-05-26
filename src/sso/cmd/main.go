@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"os"
+	"os/signal"
+	"syscall"
 
 	app "github.com/fenek-dev/go-twitter/src/sso/app/grpc"
 	"github.com/fenek-dev/go-twitter/src/sso/config"
@@ -20,5 +23,16 @@ func main() {
 
 	grpc_server := app.New(log, auth_service, cfg.GRPC.Port)
 
-	grpc_server.MustRun()
+	go func() {
+		grpc_server.MustRun()
+	}()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	<-stop
+
+	grpc_server.Stop()
+	storage.Stop(ctx)
+	log.Info("Gracefully stopped")
 }
