@@ -37,3 +37,21 @@ func (c *Controller) Register(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 }
+
+func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
+	var data dto.LoginDto
+
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	usrname, err := c.service.Login(r.Context(), data.Username, data.Password)
+	if err != nil || usrname == "" {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+}
