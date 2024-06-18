@@ -9,14 +9,17 @@ import (
 	sso_grpc "github.com/fenek-dev/go-twitter/src/sso/pkg/client"
 	"github.com/fenek-dev/go-twitter/src/write-api/config"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/auth"
+	"github.com/fenek-dev/go-twitter/src/write-api/internal/tweets"
 )
 
 func main() {
 	ctx := context.Background()
 	cfg := config.MustLoad()
-	storage := pg.New(ctx, cfg.DBUrl)
+	conn := pg.New(ctx, cfg.DBUrl)
 
-	defer storage.Close(ctx)
+	defer conn.Close(ctx)
+
+	tweet_repository := tweets.NewRepository(conn)
 
 	log := common.SetupLogger(cfg.Env)
 
@@ -30,6 +33,10 @@ func main() {
 
 	http.HandleFunc("POST /api/v1/register", auth_controller.Register)
 	http.HandleFunc("POST /api/v1/login", auth_controller.Login)
+
+	tweets_controller := tweets.NewController(tweet_repository)
+
+	http.HandleFunc("POST /api/v1/tweet", tweets_controller.Create)
 
 	http.ListenAndServe(":"+cfg.Port, nil)
 }
