@@ -38,6 +38,7 @@ func main() {
 
 	http.HandleFunc("PUT /api/v1/tweet", tweets_controller.Create)
 	http.HandleFunc("PATCH /api/v1/tweet", tweets_controller.Update)
+	http.HandleFunc("DELETE /api/v1/tweet", tweets_controller.Delete)
 
 	http.ListenAndServe(":"+cfg.Port, nil)
 }

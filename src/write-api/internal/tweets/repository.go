@@ -42,7 +42,7 @@ func (r *Repository) Create(ctx context.Context, username, content string) (mode
 }
 
 func (r *Repository) Update(ctx context.Context, id, content string) (models.Tweet, error) {
-	const op = "write.tweet.create"
+	const op = "write.tweet.update"
 
 	var tweet models.Tweet
 	rows, err := r.conn.Query(ctx, "UPDATE tweets SET content = $1, updated_at = $3 WHERE id = $2 RETURNING *",
@@ -62,6 +62,10 @@ func (r *Repository) Update(ctx context.Context, id, content string) (models.Twe
 	return tweet, nil
 }
 
-func (r *Repository) Delete() {
+func (r *Repository) Delete(ctx context.Context, id string) error {
+	const op = "write.tweet.delete"
 
+	_, err := r.conn.Exec(ctx, "DELETE FROM tweets WHERE id = $1", id)
+
+	return err
 }

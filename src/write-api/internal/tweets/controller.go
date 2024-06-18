@@ -53,3 +53,21 @@ func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
 
 	common.SendResponse(w, http.StatusOK, "ok", tweet)
 }
+
+func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) {
+	var data *dto.DeleteDto
+
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		common.SendResponse(w, http.StatusBadRequest, err.Error(), nil)
+		return
+	}
+
+	err = c.repository.Delete(r.Context(), data.Id)
+	if err != nil {
+		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+
+	common.SendResponse(w, http.StatusOK, "ok", data.Id)
+}
