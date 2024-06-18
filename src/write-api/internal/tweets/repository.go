@@ -19,10 +19,6 @@ func NewRepository(conn *pgx.Conn) *Repository {
 	}
 }
 
-func (r *Repository) GetById() {
-
-}
-
 func (r *Repository) Create(ctx context.Context, username, content string) (models.Tweet, error) {
 	const op = "write.tweet.create"
 
@@ -31,6 +27,27 @@ func (r *Repository) Create(ctx context.Context, username, content string) (mode
 		username,
 		content,
 		time.Now(),
+		time.Now(),
+	)
+	if err != nil {
+		return tweet, fmt.Errorf("%s: %w", op, err)
+	}
+
+	tweet, err = pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Tweet])
+	if err != nil {
+		return tweet, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return tweet, nil
+}
+
+func (r *Repository) Update(ctx context.Context, id, content string) (models.Tweet, error) {
+	const op = "write.tweet.create"
+
+	var tweet models.Tweet
+	rows, err := r.conn.Query(ctx, "UPDATE tweets SET content = $1, updated_at = $3 WHERE id = $2 RETURNING *",
+		content,
+		id,
 		time.Now(),
 	)
 	if err != nil {

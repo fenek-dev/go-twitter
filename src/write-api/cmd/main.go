@@ -36,7 +36,8 @@ func main() {
 
 	tweets_controller := tweets.NewController(tweet_repository)
 
-	http.HandleFunc("POST /api/v1/tweet", tweets_controller.Create)
+	http.HandleFunc("PUT /api/v1/tweet", tweets_controller.Create)
+	http.HandleFunc("PATCH /api/v1/tweet", tweets_controller.Update)
 
 	http.ListenAndServe(":"+cfg.Port, nil)
 }
