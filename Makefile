@@ -13,6 +13,13 @@ sso-protogen:
 write-api:
 	go run src/write-api/cmd/main.go --config=src/write-api/config/config_local.yaml
 
+
+# read-api
+
+read-api:
+	go run src/read-api/cmd/main.go --config=src/read-api/config/config_local.yaml
+
+
 # db
 
 db-up:
