@@ -6,10 +6,11 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/fenek-dev/go-twitter/src/common/storage/pg"
 	app "github.com/fenek-dev/go-twitter/src/sso/app/grpc"
 	"github.com/fenek-dev/go-twitter/src/sso/config"
+	user_domain "github.com/fenek-dev/go-twitter/src/sso/internal/domains/user"
 	"github.com/fenek-dev/go-twitter/src/sso/internal/services/auth"
-	"github.com/fenek-dev/go-twitter/src/sso/storage/pg"
 )
 
 func main() {
@@ -17,9 +18,13 @@ func main() {
 	cfg := config.MustLoad()
 	storage := pg.New(ctx, cfg.DBUrl)
 
+	defer storage.Close(ctx)
+
 	log := config.SetupLogger(cfg.Env)
 
-	auth_service := auth.New(log, storage, cfg.TokenTTL, cfg.Secret)
+	user_repository := user_domain.NewRepository(storage)
+
+	auth_service := auth.New(log, user_repository, cfg.TokenTTL, cfg.Secret)
 
 	grpc_server := app.New(log, auth_service, cfg.GRPC.Port)
 
@@ -33,6 +38,5 @@ func main() {
 	<-stop
 
 	grpc_server.Stop()
-	storage.Stop(ctx)
 	log.Info("Gracefully stopped")
 }
