@@ -23,19 +23,23 @@ func (r *Repository) GetById() {
 
 }
 
-func (r *Repository) Create(ctx context.Context, username, content string) (*models.Tweet, error) {
+func (r *Repository) Create(ctx context.Context, username, content string) (models.Tweet, error) {
 	const op = "write.tweet.create"
 
-	var tweet *models.Tweet
-	err := r.conn.QueryRow(ctx, "INSERT INTO tweets(username, content, created_at, updated_at) VALUES($1, $2, $3, $4) RETURNING *",
+	var tweet models.Tweet
+	rows, err := r.conn.Query(ctx, "INSERT INTO tweets(username, content, created_at, updated_at) VALUES($1, $2, $3, $4) RETURNING *",
 		username,
 		content,
 		time.Now(),
 		time.Now(),
-	).Scan(&tweet)
-
+	)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
+		return tweet, fmt.Errorf("%s: %w", op, err)
+	}
+
+	tweet, err = pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Tweet])
+	if err != nil {
+		return tweet, fmt.Errorf("%s: %w", op, err)
 	}
 
 	return tweet, nil

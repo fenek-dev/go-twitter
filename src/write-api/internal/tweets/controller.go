@@ -23,13 +23,13 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		common.SendResponse(w, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
 	tweet, err := c.repository.Create(r.Context(), data.Username, data.Content)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
