@@ -1,4 +1,4 @@
-package sl
+package common
 
 import (
 	"log/slog"

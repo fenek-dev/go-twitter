@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/fenek-dev/go-twitter/src/common"
 	"github.com/fenek-dev/go-twitter/src/common/storage/pg"
 	app "github.com/fenek-dev/go-twitter/src/sso/app/grpc"
 	"github.com/fenek-dev/go-twitter/src/sso/config"
@@ -20,7 +21,7 @@ func main() {
 
 	defer storage.Close(ctx)
 
-	log := config.SetupLogger(cfg.Env)
+	log := common.SetupLogger(cfg.Env)
 
 	user_repository := user_domain.NewRepository(storage)
 
