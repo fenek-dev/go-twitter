@@ -30,4 +30,6 @@ func main() {
 
 	http.HandleFunc("/api/v1/register", auth_controller.Register)
 	http.HandleFunc("/api/v1/login", auth_controller.Login)
+
+	http.ListenAndServe(":"+cfg.Port, nil)
 }

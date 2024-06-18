@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	Port   string `yaml:"port"`
 	Env    string `yaml:"env" env-default:"local"`
 	DBUrl  string `yaml:"db_url"`
 	SsoUrl string `yaml:"sso_url"`
