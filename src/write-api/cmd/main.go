@@ -6,6 +6,7 @@ import (
 
 	"github.com/fenek-dev/go-twitter/src/common"
 	"github.com/fenek-dev/go-twitter/src/common/storage/pg"
+	sso_grpc "github.com/fenek-dev/go-twitter/src/sso/pkg/client"
 	"github.com/fenek-dev/go-twitter/src/write-api/config"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/auth"
 )
@@ -19,7 +20,12 @@ func main() {
 
 	log := common.SetupLogger(cfg.Env)
 
-	auth_service := auth.NewService()
+	sso, err := sso_grpc.NewSsoGrpcClient(cfg.SsoUrl)
+	if err != nil {
+		panic("Could not connect to sso grpc server.")
+	}
+
+	auth_service := auth.NewService(sso)
 	auth_controller := auth.NewController(log, auth_service)
 
 	http.HandleFunc("/register", auth_controller.Register)

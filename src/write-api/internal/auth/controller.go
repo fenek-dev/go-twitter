@@ -29,7 +29,7 @@ func (c *Controller) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usrname, err := c.service.Register(data.Username, data.Password)
+	usrname, err := c.service.Register(r.Context(), data.Username, data.Password)
 	if err != nil || usrname == "" {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
