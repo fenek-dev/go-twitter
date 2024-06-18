@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/fenek-dev/go-twitter/src/common"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/auth/dto"
 )
 
@@ -35,7 +36,20 @@ func (c *Controller) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	response := common.Response{
+		Code:    http.StatusCreated,
+		Message: "User created",
+		Data:    usrname,
+	}
+
+	resJson, err := json.Marshal(response)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusCreated)
+	w.Write(resJson)
 }
 
 func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
@@ -47,11 +61,24 @@ func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usrname, err := c.service.Login(r.Context(), data.Username, data.Password)
-	if err != nil || usrname == "" {
+	token, err := c.service.Login(r.Context(), data.Username, data.Password)
+	if err != nil || token == "" {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	response := common.Response{
+		Code:    http.StatusCreated,
+		Message: "ok",
+		Data:    token,
+	}
+
+	resJson, err := json.Marshal(response)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
+	w.Write(resJson)
 }
