@@ -36,20 +36,7 @@ func (c *Controller) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := common.Response{
-		Code:    http.StatusCreated,
-		Message: "User created",
-		Data:    usrname,
-	}
-
-	resJson, err := json.Marshal(response)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	w.Write(resJson)
+	common.SendResponse(w, http.StatusCreated, "ok", usrname)
 }
 
 func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
@@ -67,18 +54,5 @@ func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := common.Response{
-		Code:    http.StatusCreated,
-		Message: "ok",
-		Data:    token,
-	}
-
-	resJson, err := json.Marshal(response)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	w.Write(resJson)
+	common.SendResponse(w, http.StatusCreated, "ok", token)
 }
