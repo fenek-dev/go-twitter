@@ -9,6 +9,7 @@ import (
 	"github.com/fenek-dev/go-twitter/src/read-api/config"
 	"github.com/fenek-dev/go-twitter/src/read-api/internal/auth"
 	"github.com/fenek-dev/go-twitter/src/read-api/internal/tweets"
+	"github.com/fenek-dev/go-twitter/src/read-api/internal/user"
 	sso_grpc "github.com/fenek-dev/go-twitter/src/sso/pkg/client"
 )
 
@@ -20,6 +21,7 @@ func main() {
 	defer conn.Close(ctx)
 
 	tweet_repository := tweets.NewRepository(conn)
+	user_repository := user.NewRepository(conn)
 
 	log := common.SetupLogger(cfg.Env)
 
@@ -32,8 +34,10 @@ func main() {
 	_ = auth.NewController(log, auth_service)
 
 	tweets_controller := tweets.NewController(tweet_repository)
+	user_controller := user.NewController(user_repository)
 
 	http.HandleFunc("GET /api/v1/tweet/{id}", tweets_controller.FindById)
+	http.HandleFunc("GET /api/v1/user/{id}", user_controller.FindById)
 
 	http.ListenAndServe(":"+cfg.Port, nil)
 }
