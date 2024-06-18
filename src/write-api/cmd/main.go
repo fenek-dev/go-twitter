@@ -28,8 +28,8 @@ func main() {
 	auth_service := auth.NewService(sso)
 	auth_controller := auth.NewController(log, auth_service)
 
-	http.HandleFunc("/api/v1/register", auth_controller.Register)
-	http.HandleFunc("/api/v1/login", auth_controller.Login)
+	http.HandleFunc("POST /api/v1/register", auth_controller.Register)
+	http.HandleFunc("POST /api/v1/login", auth_controller.Login)
 
 	http.ListenAndServe(":"+cfg.Port, nil)
 }
