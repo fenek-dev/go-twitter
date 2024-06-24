@@ -1,13 +1,22 @@
 package storage
 
-import "github.com/jackc/pgx/v5"
+import (
+	"context"
+
+	"github.com/fenek-dev/go-twitter/src/common/storage/pg"
+	"github.com/jackc/pgx/v5"
+)
 
 type Storage struct {
 	conn *pgx.Conn
 }
 
-func New(conn *pgx.Conn) *Storage {
+func New(ctx context.Context, url string) *Storage {
 	return &Storage{
-		conn: conn,
+		conn: pg.New(ctx, url),
 	}
+}
+
+func (s *Storage) Close(ctx context.Context) {
+	s.conn.Close(ctx)
 }

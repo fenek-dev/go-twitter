@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/fenek-dev/go-twitter/src/common"
-	"github.com/fenek-dev/go-twitter/src/common/storage/pg"
 	"github.com/fenek-dev/go-twitter/src/read-api/config"
 	"github.com/fenek-dev/go-twitter/src/read-api/internal/handlers"
 	"github.com/fenek-dev/go-twitter/src/read-api/internal/storage"
@@ -14,13 +13,12 @@ import (
 func main() {
 	ctx := context.Background()
 	cfg := config.MustLoad()
-	conn := pg.New(ctx, cfg.DBUrl)
-
-	defer conn.Close(ctx)
 
 	_ = common.SetupLogger(cfg.Env)
 
-	storage := storage.New(conn)
+	storage := storage.New(ctx, cfg.DBUrl)
+
+	defer storage.Close(ctx)
 
 	handlers := handlers.New(storage)
 

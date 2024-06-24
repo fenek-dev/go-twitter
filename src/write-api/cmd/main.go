@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/fenek-dev/go-twitter/src/common"
-	"github.com/fenek-dev/go-twitter/src/common/storage/pg"
 	sso_grpc "github.com/fenek-dev/go-twitter/src/sso/pkg/client"
 	"github.com/fenek-dev/go-twitter/src/write-api/config"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/handlers"
@@ -16,13 +15,11 @@ import (
 func main() {
 	ctx := context.Background()
 	cfg := config.MustLoad()
-	conn := pg.New(ctx, cfg.DBUrl)
-
-	defer conn.Close(ctx)
 
 	log := common.SetupLogger(cfg.Env)
 
-	storage := storage.New(conn)
+	storage := storage.New(ctx, cfg.DBUrl)
+	defer storage.Close(ctx)
 
 	sso, err := sso_grpc.NewSsoGrpcClient(cfg.SsoUrl)
 	if err != nil {
