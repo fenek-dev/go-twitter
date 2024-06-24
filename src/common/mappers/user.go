@@ -6,12 +6,22 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func UserModelToProtoTweet(user *models.User) *proto.User {
+func UserModelToProtoUser(user *models.User) *proto.User {
 	return &proto.User{
 		Username:    user.Username,
 		PassHash:    user.PassHash,
 		Description: user.Description,
-		CreatedAt:   &timestamppb.Timestamp{Seconds: user.CreatedAt.Unix()},
-		UpdatedAt:   &timestamppb.Timestamp{Seconds: user.UpdatedAt.Unix()},
+		CreatedAt:   timestamppb.New(user.CreatedAt),
+		UpdatedAt:   timestamppb.New(user.UpdatedAt),
+	}
+}
+
+func ProtoUserToModel(user *proto.User) *models.User {
+	return &models.User{
+		Username:    user.Username,
+		PassHash:    user.PassHash,
+		Description: user.Description,
+		CreatedAt:   user.CreatedAt.AsTime(),
+		UpdatedAt:   user.UpdatedAt.AsTime(),
 	}
 }

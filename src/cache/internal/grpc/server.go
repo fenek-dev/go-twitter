@@ -52,7 +52,7 @@ func (s *serverAPI) FindUserById(ctx context.Context, in *proto.FindUserByIdRequ
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
-	return &proto.FindUserByIdResponse{User: mappers.UserModelToProtoTweet(&user)}, nil
+	return &proto.FindUserByIdResponse{User: mappers.UserModelToProtoUser(&user)}, nil
 }
 
 func (s *serverAPI) SaveUser(ctx context.Context, in *proto.SaveUserRequest) (*proto.SaveUserResponse, error) {

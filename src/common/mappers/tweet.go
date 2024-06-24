@@ -7,11 +7,22 @@ import (
 )
 
 func TweetModelToProtoTweet(tweet *models.Tweet) *proto.Tweet {
+	timestamppb.New(tweet.CreatedAt)
 	return &proto.Tweet{
 		Id:        tweet.ID,
 		Content:   tweet.Content,
 		Username:  tweet.Username,
-		CreatedAt: &timestamppb.Timestamp{Seconds: tweet.CreatedAt.Unix()},
-		UpdatedAt: &timestamppb.Timestamp{Seconds: tweet.UpdatedAt.Unix()},
+		CreatedAt: timestamppb.New(tweet.CreatedAt),
+		UpdatedAt: timestamppb.New(tweet.UpdatedAt),
+	}
+}
+
+func ProtoTweetToModel(tweet *proto.Tweet) *models.Tweet {
+	return &models.Tweet{
+		ID:        tweet.Id,
+		Content:   tweet.Content,
+		Username:  tweet.Username,
+		CreatedAt: tweet.CreatedAt.AsTime(),
+		UpdatedAt: tweet.UpdatedAt.AsTime(),
 	}
 }
