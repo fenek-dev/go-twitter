@@ -8,8 +8,9 @@ import (
 	"github.com/fenek-dev/go-twitter/src/common/storage/pg"
 	sso_grpc "github.com/fenek-dev/go-twitter/src/sso/pkg/client"
 	"github.com/fenek-dev/go-twitter/src/write-api/config"
-	"github.com/fenek-dev/go-twitter/src/write-api/internal/auth"
-	"github.com/fenek-dev/go-twitter/src/write-api/internal/tweets"
+	"github.com/fenek-dev/go-twitter/src/write-api/internal/handlers"
+	"github.com/fenek-dev/go-twitter/src/write-api/internal/services"
+	"github.com/fenek-dev/go-twitter/src/write-api/internal/storage"
 )
 
 func main() {
@@ -19,26 +20,25 @@ func main() {
 
 	defer conn.Close(ctx)
 
-	tweet_repository := tweets.NewRepository(conn)
-
 	log := common.SetupLogger(cfg.Env)
+
+	storage := storage.New(conn)
 
 	sso, err := sso_grpc.NewSsoGrpcClient(cfg.SsoUrl)
 	if err != nil {
 		panic("Could not connect to sso grpc server.")
 	}
 
-	auth_service := auth.NewService(sso)
-	auth_controller := auth.NewController(log, auth_service)
+	services := services.New(sso)
 
-	http.HandleFunc("POST /api/v1/register", auth_controller.Register)
-	http.HandleFunc("POST /api/v1/login", auth_controller.Login)
+	handlers := handlers.New(storage, services, log)
 
-	tweets_controller := tweets.NewController(tweet_repository)
+	http.HandleFunc("POST /api/v1/register", handlers.Register)
+	http.HandleFunc("POST /api/v1/login", handlers.Login)
 
-	http.HandleFunc("PUT /api/v1/tweet", tweets_controller.Create)
-	http.HandleFunc("PATCH /api/v1/tweet", tweets_controller.Update)
-	http.HandleFunc("DELETE /api/v1/tweet", tweets_controller.Delete)
+	http.HandleFunc("PUT /api/v1/tweet", handlers.CreateTweet)
+	http.HandleFunc("PATCH /api/v1/tweet", handlers.UpdateTweet)
+	http.HandleFunc("DELETE /api/v1/tweet", handlers.DeleteTweet)
 
 	http.ListenAndServe(":"+cfg.Port, nil)
 }

@@ -1,4 +1,4 @@
-package tweets
+package storage
 
 import (
 	"context"
@@ -9,21 +9,11 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type Repository struct {
-	conn *pgx.Conn
-}
-
-func NewRepository(conn *pgx.Conn) *Repository {
-	return &Repository{
-		conn: conn,
-	}
-}
-
-func (r *Repository) Create(ctx context.Context, username, content string) (models.Tweet, error) {
+func (s *Storage) CreateTweet(ctx context.Context, username, content string) (models.Tweet, error) {
 	const op = "write.tweet.create"
 
 	var tweet models.Tweet
-	rows, err := r.conn.Query(ctx, "INSERT INTO tweets(username, content, created_at, updated_at) VALUES($1, $2, $3, $4) RETURNING *",
+	rows, err := s.conn.Query(ctx, "INSERT INTO tweets(username, content, created_at, updated_at) VALUES($1, $2, $3, $4) RETURNING *",
 		username,
 		content,
 		time.Now(),
@@ -41,11 +31,11 @@ func (r *Repository) Create(ctx context.Context, username, content string) (mode
 	return tweet, nil
 }
 
-func (r *Repository) Update(ctx context.Context, id, content string) (models.Tweet, error) {
+func (s *Storage) UpdateTweet(ctx context.Context, id, content string) (models.Tweet, error) {
 	const op = "write.tweet.update"
 
 	var tweet models.Tweet
-	rows, err := r.conn.Query(ctx, "UPDATE tweets SET content = $1, updated_at = $3 WHERE id = $2 RETURNING *",
+	rows, err := s.conn.Query(ctx, "UPDATE tweets SET content = $1, updated_at = $3 WHERE id = $2 RETURNING *",
 		content,
 		id,
 		time.Now(),
@@ -62,10 +52,10 @@ func (r *Repository) Update(ctx context.Context, id, content string) (models.Twe
 	return tweet, nil
 }
 
-func (r *Repository) Delete(ctx context.Context, id string) error {
+func (s *Storage) DeleteTweet(ctx context.Context, id string) error {
 	const op = "write.tweet.delete"
 
-	_, err := r.conn.Exec(ctx, "DELETE FROM tweets WHERE id = $1", id)
+	_, err := s.conn.Exec(ctx, "DELETE FROM tweets WHERE id = $1", id)
 
 	return err
 }

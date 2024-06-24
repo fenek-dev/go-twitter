@@ -1,24 +1,14 @@
-package tweets
+package handlers
 
 import (
 	"encoding/json"
 	"net/http"
 
 	"github.com/fenek-dev/go-twitter/src/common"
-	"github.com/fenek-dev/go-twitter/src/write-api/internal/tweets/dto"
+	"github.com/fenek-dev/go-twitter/src/write-api/internal/dto"
 )
 
-type Controller struct {
-	repository *Repository
-}
-
-func NewController(repository *Repository) *Controller {
-	return &Controller{
-		repository: repository,
-	}
-}
-
-func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) CreateTweet(w http.ResponseWriter, r *http.Request) {
 	var data *dto.CreateDto
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -27,7 +17,7 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tweet, err := c.repository.Create(r.Context(), data.Username, data.Content)
+	tweet, err := h.db.CreateTweet(r.Context(), data.Username, data.Content)
 	if err != nil {
 		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return
@@ -36,7 +26,7 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 	common.SendResponse(w, http.StatusCreated, "ok", tweet)
 }
 
-func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) UpdateTweet(w http.ResponseWriter, r *http.Request) {
 	var data *dto.UpdateDto
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -45,7 +35,7 @@ func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tweet, err := c.repository.Update(r.Context(), data.Id, data.Content)
+	tweet, err := h.db.UpdateTweet(r.Context(), data.Id, data.Content)
 	if err != nil {
 		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return
@@ -54,7 +44,7 @@ func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
 	common.SendResponse(w, http.StatusOK, "ok", tweet)
 }
 
-func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) DeleteTweet(w http.ResponseWriter, r *http.Request) {
 	var data *dto.DeleteDto
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -63,7 +53,7 @@ func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = c.repository.Delete(r.Context(), data.Id)
+	err = h.db.DeleteTweet(r.Context(), data.Id)
 	if err != nil {
 		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return

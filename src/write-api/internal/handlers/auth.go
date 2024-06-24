@@ -1,27 +1,14 @@
-package auth
+package handlers
 
 import (
 	"encoding/json"
-	"log/slog"
 	"net/http"
 
 	"github.com/fenek-dev/go-twitter/src/common"
-	"github.com/fenek-dev/go-twitter/src/write-api/internal/auth/dto"
+	"github.com/fenek-dev/go-twitter/src/write-api/internal/dto"
 )
 
-type Controller struct {
-	log     *slog.Logger
-	service *Service
-}
-
-func NewController(log *slog.Logger, service *Service) *Controller {
-	return &Controller{
-		log:     log,
-		service: service,
-	}
-}
-
-func (c *Controller) Register(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) Register(w http.ResponseWriter, r *http.Request) {
 	var data dto.RegisterDto
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -30,7 +17,7 @@ func (c *Controller) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usrname, err := c.service.Register(r.Context(), data.Username, data.Password)
+	usrname, err := h.service.Register(r.Context(), data.Username, data.Password)
 	if err != nil || usrname == "" {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -39,7 +26,7 @@ func (c *Controller) Register(w http.ResponseWriter, r *http.Request) {
 	common.SendResponse(w, http.StatusCreated, "ok", usrname)
 }
 
-func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 	var data dto.LoginDto
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -48,7 +35,7 @@ func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := c.service.Login(r.Context(), data.Username, data.Password)
+	token, err := h.service.Login(r.Context(), data.Username, data.Password)
 	if err != nil || token == "" {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
