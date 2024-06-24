@@ -8,7 +8,6 @@ import (
 
 	"github.com/fenek-dev/go-twitter/src/cache/config"
 	"github.com/fenek-dev/go-twitter/src/cache/internal/grpc"
-	"github.com/fenek-dev/go-twitter/src/cache/internal/handlers"
 	"github.com/fenek-dev/go-twitter/src/cache/internal/storage/pg"
 	"github.com/fenek-dev/go-twitter/src/cache/internal/storage/redis"
 	"github.com/fenek-dev/go-twitter/src/common"
@@ -23,9 +22,7 @@ func main() {
 	storage := pg.New(ctx, cfg.DBUrl)
 	redis := redis.New(&cfg.Redis)
 
-	handlers := handlers.New(storage, redis)
-
-	grpc_server := grpc.New(log, handlers, cfg.GRPC.Port)
+	grpc_server := grpc.New(log, storage, redis, cfg.GRPC.Port)
 
 	go grpc_server.MustRun()
 

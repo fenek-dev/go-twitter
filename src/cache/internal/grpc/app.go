@@ -5,7 +5,8 @@ import (
 	"log/slog"
 	"net"
 
-	"github.com/fenek-dev/go-twitter/src/cache/internal/handlers"
+	"github.com/fenek-dev/go-twitter/src/cache/internal/storage/pg"
+	"github.com/fenek-dev/go-twitter/src/cache/internal/storage/redis"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"google.golang.org/grpc"
 )
@@ -16,12 +17,12 @@ type App struct {
 	port       int
 }
 
-func New(log *slog.Logger, handlers *handlers.Handlers, port int) *App {
+func New(log *slog.Logger, storage *pg.Postgres, redis *redis.Redis, port int) *App {
 	gRPCServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
 		recovery.UnaryServerInterceptor(),
 	))
 
-	Register(gRPCServer, handlers)
+	Register(gRPCServer, storage, redis)
 
 	return &App{
 		log:        log,

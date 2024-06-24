@@ -4,7 +4,8 @@ import (
 	"context"
 
 	proto "github.com/fenek-dev/go-twitter/proto/protogen"
-	"github.com/fenek-dev/go-twitter/src/cache/internal/handlers"
+	"github.com/fenek-dev/go-twitter/src/cache/internal/storage/pg"
+	"github.com/fenek-dev/go-twitter/src/cache/internal/storage/redis"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -13,11 +14,12 @@ import (
 
 type serverAPI struct {
 	proto.UnimplementedCacheServiceServer
-	handlers *handlers.Handlers
+	storage *pg.Postgres
+	redis   *redis.Redis
 }
 
-func Register(gRPCServer *grpc.Server, handlers *handlers.Handlers) {
-	proto.RegisterCacheServiceServer(gRPCServer, &serverAPI{handlers: handlers})
+func Register(gRPCServer *grpc.Server, storage *pg.Postgres, redis *redis.Redis) {
+	proto.RegisterCacheServiceServer(gRPCServer, &serverAPI{storage: storage, redis: redis})
 }
 
 func (s *serverAPI) CreateTweet(context.Context, *proto.CreateTweetRequest) (*proto.CreateTweetResponse, error) {
