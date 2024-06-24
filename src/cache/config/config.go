@@ -3,17 +3,28 @@ package config
 import (
 	"flag"
 	"os"
+	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
-	Port     string `yaml:"port"`
-	Env      string `yaml:"env" env-default:"local"`
+	Port  string      `yaml:"port"`
+	Env   string      `yaml:"env" env-default:"local"`
+	GRPC  GRPCConfig  `yaml:"grpc"`
+	Redis RedisConfig `yaml:"redis"`
+	DBUrl string      `yaml:"db_url"`
+}
+
+type GRPCConfig struct {
+	Port    int           `yaml:"port"`
+	Timeout time.Duration `yaml:"timeout"`
+}
+
+type RedisConfig struct {
 	Addr     string `yaml:"addr"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`
-	DBUrl    string `yaml:"db_url"`
 }
 
 func MustLoad() *Config {

@@ -36,11 +36,10 @@ message LoginResponse {
 // -----------------Cache service-----------------
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/empty.proto";
 
 service CacheService {
   rpc CreateTweet(CreateTweetRequest) returns (CreateTweetResponse);
-  rpc DeleteTweet(DeleteTweetRequest) returns (google.protobuf.Empty);
+  rpc DeleteTweet(DeleteTweetRequest) returns (DeleteTweetResponse);
   rpc FindTweetById(FindTweetByIdRequest) returns (FindTweetByIdResponse);
   rpc FindUserById(FindUserByIdRequest) returns (FindUserByIdResponse);
   rpc SaveUser(SaveUserRequest) returns (SaveUserResponse);
@@ -73,6 +72,10 @@ message CreateTweetResponse {
 }
 
 message DeleteTweetRequest {
+  string id = 1;
+}
+
+message DeleteTweetResponse {
   string id = 1;
 }
 

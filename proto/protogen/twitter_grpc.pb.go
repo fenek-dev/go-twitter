@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -150,7 +149,7 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CacheServiceClient interface {
 	CreateTweet(ctx context.Context, in *CreateTweetRequest, opts ...grpc.CallOption) (*CreateTweetResponse, error)
-	DeleteTweet(ctx context.Context, in *DeleteTweetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteTweet(ctx context.Context, in *DeleteTweetRequest, opts ...grpc.CallOption) (*DeleteTweetResponse, error)
 	FindTweetById(ctx context.Context, in *FindTweetByIdRequest, opts ...grpc.CallOption) (*FindTweetByIdResponse, error)
 	FindUserById(ctx context.Context, in *FindUserByIdRequest, opts ...grpc.CallOption) (*FindUserByIdResponse, error)
 	SaveUser(ctx context.Context, in *SaveUserRequest, opts ...grpc.CallOption) (*SaveUserResponse, error)
@@ -174,8 +173,8 @@ func (c *cacheServiceClient) CreateTweet(ctx context.Context, in *CreateTweetReq
 	return out, nil
 }
 
-func (c *cacheServiceClient) DeleteTweet(ctx context.Context, in *DeleteTweetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *cacheServiceClient) DeleteTweet(ctx context.Context, in *DeleteTweetRequest, opts ...grpc.CallOption) (*DeleteTweetResponse, error) {
+	out := new(DeleteTweetResponse)
 	err := c.cc.Invoke(ctx, "/twitter.CacheService/DeleteTweet", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -224,7 +223,7 @@ func (c *cacheServiceClient) UpdateTweet(ctx context.Context, in *UpdateTweetReq
 // for forward compatibility
 type CacheServiceServer interface {
 	CreateTweet(context.Context, *CreateTweetRequest) (*CreateTweetResponse, error)
-	DeleteTweet(context.Context, *DeleteTweetRequest) (*emptypb.Empty, error)
+	DeleteTweet(context.Context, *DeleteTweetRequest) (*DeleteTweetResponse, error)
 	FindTweetById(context.Context, *FindTweetByIdRequest) (*FindTweetByIdResponse, error)
 	FindUserById(context.Context, *FindUserByIdRequest) (*FindUserByIdResponse, error)
 	SaveUser(context.Context, *SaveUserRequest) (*SaveUserResponse, error)
@@ -239,7 +238,7 @@ type UnimplementedCacheServiceServer struct {
 func (UnimplementedCacheServiceServer) CreateTweet(context.Context, *CreateTweetRequest) (*CreateTweetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTweet not implemented")
 }
-func (UnimplementedCacheServiceServer) DeleteTweet(context.Context, *DeleteTweetRequest) (*emptypb.Empty, error) {
+func (UnimplementedCacheServiceServer) DeleteTweet(context.Context, *DeleteTweetRequest) (*DeleteTweetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTweet not implemented")
 }
 func (UnimplementedCacheServiceServer) FindTweetById(context.Context, *FindTweetByIdRequest) (*FindTweetByIdResponse, error) {

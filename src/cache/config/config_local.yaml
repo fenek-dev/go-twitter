@@ -1,6 +1,10 @@
 port: 8001
 env: "local"
-addr: "localhost:6379"
-password: "password"
-db: 0
 db_url: "postgres://user:password@localhost:5432/twitter?sslmode=disable"
+redis:
+  addr: "localhost:6379"
+  password: "password"
+  db: 0
+grpc:
+  port: 55055
+  timeout: 10h

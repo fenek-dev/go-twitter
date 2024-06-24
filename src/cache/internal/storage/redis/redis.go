@@ -9,7 +9,7 @@ type Redis struct {
 	conn *redis.Client
 }
 
-func New(cfg *config.Config) *Redis {
+func New(cfg *config.RedisConfig) *Redis {
 	conn := redis.NewClient(&redis.Options{
 		Addr:     cfg.Addr,
 		Password: cfg.Password,
