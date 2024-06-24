@@ -3,14 +3,14 @@ package auth
 import (
 	"context"
 
-	ssov1 "github.com/fenek-dev/go-twitter/src/sso/protogen"
+	ssov1 "github.com/fenek-dev/go-twitter/proto/protogen"
 )
 
 type Service struct {
-	sso ssov1.AuthClient
+	sso ssov1.AuthServiceClient
 }
 
-func NewService(sso ssov1.AuthClient) *Service {
+func NewService(sso ssov1.AuthServiceClient) *Service {
 	return &Service{
 		sso: sso,
 	}

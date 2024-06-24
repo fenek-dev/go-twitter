@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	ssov1 "github.com/fenek-dev/go-twitter/src/sso/protogen"
+	ssov1 "github.com/fenek-dev/go-twitter/proto/protogen"
 )
 
 func (s *Services) Register(ctx context.Context, username, password string) (string, error) {

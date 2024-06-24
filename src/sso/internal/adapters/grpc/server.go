@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 
-	ssov1 "github.com/fenek-dev/go-twitter/src/sso/protogen"
+	ssov1 "github.com/fenek-dev/go-twitter/proto/protogen"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -11,7 +11,7 @@ import (
 )
 
 type serverAPI struct {
-	ssov1.UnimplementedAuthServer
+	ssov1.UnimplementedAuthServiceServer
 	auth Auth
 }
 
@@ -29,7 +29,7 @@ type Auth interface {
 }
 
 func Register(gRPCServer *grpc.Server, auth Auth) {
-	ssov1.RegisterAuthServer(gRPCServer, &serverAPI{auth: auth})
+	ssov1.RegisterAuthServiceServer(gRPCServer, &serverAPI{auth: auth})
 }
 
 func (s *serverAPI) Login(

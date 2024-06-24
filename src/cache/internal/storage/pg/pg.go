@@ -17,6 +17,6 @@ func New(ctx context.Context, url string) *Postgres {
 	}
 }
 
-func (s *Postgres) Close(ctx context.Context) {
-	s.conn.Close(ctx)
+func (p *Postgres) Close(ctx context.Context) {
+	p.conn.Close(ctx)
 }
