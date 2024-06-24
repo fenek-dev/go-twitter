@@ -18,11 +18,16 @@ write-api:
 read-api:
 	go run src/read-api/cmd/main.go --config=src/read-api/config/config_local.yaml
 
+# redis
+redis-up:
+	docker-compose -f=storage/docker-compose.redis.yaml -p=redis_twitter up
+redis-down:
+	docker-compose -f=storage/docker-compose.redis.yaml -p=redis_twitter down
 
 # db
 db-up:
-	docker-compose -f=db/docker-compose.yaml -p=pg_twitter up
+	docker-compose -f=storage/docker-compose.db.yaml -p=pg_twitter up
 db-down:
-	docker-compose -f=db/docker-compose.yaml -p=pg_twitter down
+	docker-compose -f=storage/docker-compose.db.yaml -p=pg_twitter down
 db-migrate:
-	migrate -database "postgres://user:password@localhost:5432/twitter?sslmode=disable" -path db/migrations up
+	migrate -database "postgres://user:password@localhost:5432/twitter?sslmode=disable" -path storage/migrations up
