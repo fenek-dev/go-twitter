@@ -1,4 +1,4 @@
-package tweets
+package storage
 
 import (
 	"context"
@@ -8,21 +8,11 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type Repository struct {
-	conn *pgx.Conn
-}
-
-func NewRepository(conn *pgx.Conn) *Repository {
-	return &Repository{
-		conn: conn,
-	}
-}
-
-func (r *Repository) FindById(ctx context.Context, id string) (models.Tweet, error) {
+func (s *Storage) FindTweetById(ctx context.Context, id string) (models.Tweet, error) {
 	const op = "read.tweet.findbyid"
 
 	var tweet models.Tweet
-	rows, err := r.conn.Query(ctx, "SELECT * FROM tweets WHERE id = $1", id)
+	rows, err := s.conn.Query(ctx, "SELECT * FROM tweets WHERE id = $1", id)
 	if err != nil {
 		return tweet, fmt.Errorf("%s: %w", op, err)
 	}

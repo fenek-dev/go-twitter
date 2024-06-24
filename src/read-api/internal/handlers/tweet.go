@@ -1,4 +1,4 @@
-package user
+package handlers
 
 import (
 	"net/http"
@@ -6,17 +6,7 @@ import (
 	"github.com/fenek-dev/go-twitter/src/common"
 )
 
-type Controller struct {
-	repository *Repository
-}
-
-func NewController(repository *Repository) *Controller {
-	return &Controller{
-		repository: repository,
-	}
-}
-
-func (c *Controller) FindById(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) FindTweetById(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
 	if id == "" {
@@ -24,7 +14,7 @@ func (c *Controller) FindById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tweet, err := c.repository.FindById(r.Context(), id)
+	tweet, err := h.db.FindTweetById(r.Context(), id)
 	if err != nil {
 		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return
