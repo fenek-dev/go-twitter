@@ -2,3 +2,4 @@ port: 8001
 env: "local"
 db_url: "postgres://user:password@localhost:5432/twitter?sslmode=disable"
 sso_url: "localhost:44044"
+cache_url: "localhost:55055"

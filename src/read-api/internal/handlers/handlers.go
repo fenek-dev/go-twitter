@@ -1,14 +1,14 @@
 package handlers
 
 import (
-	"github.com/fenek-dev/go-twitter/src/read-api/internal/storage"
+	proto "github.com/fenek-dev/go-twitter/proto/protogen"
 )
 
 type Handlers struct {
-	db *storage.Storage
+	db proto.CacheServiceClient
 }
 
-func New(db *storage.Storage) *Handlers {
+func New(db proto.CacheServiceClient) *Handlers {
 	return &Handlers{
 		db: db,
 	}
