@@ -13,6 +13,7 @@ type Config struct {
 	Addr     string `yaml:"addr"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`
+	DBUrl    string `yaml:"db_url"`
 }
 
 func MustLoad() *Config {
