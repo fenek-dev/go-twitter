@@ -17,7 +17,7 @@ func (h *Handlers) CreateTweet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tweet, err := h.db.CreateTweet(r.Context(), data.Username, data.Content)
+	tweet, err := h.service.CreateTweet(r.Context(), data.Username, data.Content)
 	if err != nil {
 		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return
@@ -35,7 +35,7 @@ func (h *Handlers) UpdateTweet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tweet, err := h.db.UpdateTweet(r.Context(), data.Id, data.Content)
+	tweet, err := h.service.UpdateTweet(r.Context(), data.Id, data.Content)
 	if err != nil {
 		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return
@@ -53,11 +53,11 @@ func (h *Handlers) DeleteTweet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.db.DeleteTweet(r.Context(), data.Id)
+	id, err := h.service.DeleteTweet(r.Context(), data.Id)
 	if err != nil {
 		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
-	common.SendResponse(w, http.StatusOK, "ok", data.Id)
+	common.SendResponse(w, http.StatusOK, "ok", id)
 }

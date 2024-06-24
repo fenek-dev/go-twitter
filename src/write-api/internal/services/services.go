@@ -1,13 +1,18 @@
 package services
 
-import ssov1 "github.com/fenek-dev/go-twitter/proto/protogen"
+import (
+	proto "github.com/fenek-dev/go-twitter/proto/protogen"
+	ssov1 "github.com/fenek-dev/go-twitter/proto/protogen"
+)
 
 type Services struct {
-	sso ssov1.AuthServiceClient
+	sso   ssov1.AuthServiceClient
+	cache proto.CacheServiceClient
 }
 
-func New(sso ssov1.AuthServiceClient) *Services {
+func New(sso ssov1.AuthServiceClient, cache proto.CacheServiceClient) *Services {
 	return &Services{
-		sso: sso,
+		sso:   sso,
+		cache: cache,
 	}
 }

@@ -4,31 +4,33 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/fenek-dev/go-twitter/src/cache/pkg/client"
 	"github.com/fenek-dev/go-twitter/src/common"
 	sso_grpc "github.com/fenek-dev/go-twitter/src/sso/pkg/client"
 	"github.com/fenek-dev/go-twitter/src/write-api/config"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/handlers"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/services"
-	"github.com/fenek-dev/go-twitter/src/write-api/internal/storage"
 )
 
 func main() {
-	ctx := context.Background()
+	_ = context.Background()
 	cfg := config.MustLoad()
 
 	log := common.SetupLogger(cfg.Env)
-
-	storage := storage.New(ctx, cfg.DBUrl)
-	defer storage.Close(ctx)
 
 	sso, err := sso_grpc.NewSsoGrpcClient(cfg.SsoUrl)
 	if err != nil {
 		panic("Could not connect to sso grpc server.")
 	}
+	client, err := client.New(cfg.CacheUrl)
+	if err != nil {
+		panic("Could not connect to cache grpc server.")
+	}
+	cache := client.NewService()
 
-	services := services.New(sso)
+	services := services.New(sso, cache)
 
-	handlers := handlers.New(storage, services, log)
+	handlers := handlers.New(services, log)
 
 	http.HandleFunc("POST /api/v1/register", handlers.Register)
 	http.HandleFunc("POST /api/v1/login", handlers.Login)
