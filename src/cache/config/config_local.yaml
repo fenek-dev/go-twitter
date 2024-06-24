@@ -1,0 +1,5 @@
+port: 8001
+env: "local"
+Addr: "localhost:6379"
+Password: "password"
+DB: 0
