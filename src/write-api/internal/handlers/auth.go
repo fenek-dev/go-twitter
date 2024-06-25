@@ -13,13 +13,13 @@ func (h *Handlers) Register(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		common.SendResponse(w, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
 	usrname, err := h.service.Register(r.Context(), data.Username, data.Password)
 	if err != nil || usrname == "" {
-		w.WriteHeader(http.StatusInternalServerError)
+		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
@@ -31,13 +31,13 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		common.SendResponse(w, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
 	token, err := h.service.Login(r.Context(), data.Username, data.Password)
 	if err != nil || token == "" {
-		w.WriteHeader(http.StatusInternalServerError)
+		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
