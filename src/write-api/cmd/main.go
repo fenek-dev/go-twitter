@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/fenek-dev/go-twitter/src/cache/pkg/client"
 	"github.com/fenek-dev/go-twitter/src/common"
@@ -18,17 +21,19 @@ func main() {
 
 	log := common.SetupLogger(cfg.Env)
 
-	sso, err := sso_grpc.NewSsoGrpcClient(cfg.SsoUrl)
+	sso, err := sso_grpc.New(cfg.SsoUrl)
 	if err != nil {
 		panic("Could not connect to sso grpc server.")
 	}
+	sso_service := sso.NewService()
+
 	client, err := client.New(cfg.CacheUrl)
 	if err != nil {
 		panic("Could not connect to cache grpc server.")
 	}
 	cache := client.NewService()
 
-	services := services.New(sso, cache)
+	services := services.New(sso_service, cache)
 
 	handlers := handlers.New(services, log)
 
@@ -39,5 +44,17 @@ func main() {
 	http.HandleFunc("PATCH /api/v1/tweet", handlers.UpdateTweet)
 	http.HandleFunc("DELETE /api/v1/tweet", handlers.DeleteTweet)
 
-	http.ListenAndServe(":"+cfg.Port, nil)
+	go func() {
+		http.ListenAndServe(":"+cfg.Port, nil)
+	}()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	<-stop
+
+	sso.Close()
+	client.Close()
+
+	log.Info("Gracefully stopped")
 }
