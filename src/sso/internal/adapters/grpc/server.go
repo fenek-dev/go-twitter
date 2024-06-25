@@ -4,6 +4,8 @@ import (
 	"context"
 
 	ssov1 "github.com/fenek-dev/go-twitter/proto/protogen"
+	"github.com/fenek-dev/go-twitter/src/common/mappers"
+	"github.com/fenek-dev/go-twitter/src/common/models"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -26,6 +28,10 @@ type Auth interface {
 		username string,
 		password string,
 	) (usrname string, err error)
+	Verify(
+		ctx context.Context,
+		token string,
+	) (user *models.User, err error)
 }
 
 func Register(gRPCServer *grpc.Server, auth Auth) {
@@ -78,4 +84,19 @@ func (s *serverAPI) Register(
 	}
 
 	return &ssov1.RegisterResponse{Username: urname}, nil
+}
+
+func (s *serverAPI) Verify(
+	ctx context.Context,
+	in *ssov1.VerifyRequest,
+) (*ssov1.VerifyResponse, error) {
+	user, err := s.auth.Verify(ctx, in.Token)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to verify user")
+	}
+
+	protoUser := mappers.UserModelToProtoUser(user)
+
+	return &ssov1.VerifyResponse{User: protoUser}, nil
 }

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	sl "github.com/fenek-dev/go-twitter/src/common"
+	"github.com/fenek-dev/go-twitter/src/common/mappers"
 	"github.com/fenek-dev/go-twitter/src/common/models"
 	"github.com/fenek-dev/go-twitter/src/sso/internal/lib"
 	"golang.org/x/crypto/bcrypt"
@@ -120,4 +121,27 @@ func (a *Auth) Login(
 	}
 
 	return token, nil
+}
+
+func (a *Auth) Verify(
+	ctx context.Context,
+	token string,
+) (*models.User, error) {
+	const op = "Auth.Verify"
+
+	log := a.log.With(
+		slog.String("op", op),
+	)
+
+	// Создаём токен авторизации
+	claims, err := lib.GetFromToken(token, a.secret)
+	if err != nil {
+		log.Error("failed to verify token", sl.Err(err))
+
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	user := mappers.ClaimsToUserModel(claims)
+
+	return user, nil
 }
