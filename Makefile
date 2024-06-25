@@ -1,7 +1,7 @@
 PROJECTNAME=$(shell basename "$(PWD)")
 
 local:
-	make -j 4 db-up sso write-api read-api
+	make -j 5 db-up sso cache write-api read-api 
 
 protogen:
 	export PATH="$PATH:$(go env GOPATH)/bin" && protoc -I proto proto/twitter.proto --go_out=./proto/protogen/ --go_opt=paths=source_relative --go-grpc_out=./proto/protogen/ --go-grpc_opt=paths=source_relative
@@ -14,6 +14,10 @@ sso:
 write-api:
 	go run src/write-api/cmd/main.go --config=src/write-api/config/config_local.yaml
 
+
+# cache
+cache:
+	go run src/cache/cmd/main.go --config=src/cache/config/config_local.yaml
 
 # read-api
 read-api:
