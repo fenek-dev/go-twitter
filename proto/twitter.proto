@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 package twitter;
 
 option go_package = "fenek.sso.v1;ssov1";
@@ -35,7 +37,6 @@ message LoginResponse {
 
 // -----------------Cache service-----------------
 
-import "google/protobuf/timestamp.proto";
 
 service CacheService {
   rpc CreateTweet(CreateTweetRequest) returns (CreateTweetResponse);
