@@ -9,6 +9,7 @@ import (
 
 	"github.com/fenek-dev/go-twitter/src/cache/pkg/client"
 	"github.com/fenek-dev/go-twitter/src/common"
+	"github.com/fenek-dev/go-twitter/src/common/middlewares"
 	sso_grpc "github.com/fenek-dev/go-twitter/src/sso/pkg/client"
 	"github.com/fenek-dev/go-twitter/src/write-api/config"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/handlers"
@@ -37,12 +38,14 @@ func main() {
 
 	handlers := handlers.New(services, log)
 
+	auth_middleware := middlewares.NewAuthMiddleware(sso_service)
+
 	http.HandleFunc("POST /api/v1/register", handlers.Register)
 	http.HandleFunc("POST /api/v1/login", handlers.Login)
 
-	http.HandleFunc("PUT /api/v1/tweet", handlers.CreateTweet)
-	http.HandleFunc("PATCH /api/v1/tweet", handlers.UpdateTweet)
-	http.HandleFunc("DELETE /api/v1/tweet", handlers.DeleteTweet)
+	http.HandleFunc("PUT /api/v1/tweet", auth_middleware.Handle(handlers.CreateTweet))
+	http.HandleFunc("PATCH /api/v1/tweet", auth_middleware.Handle(handlers.UpdateTweet))
+	http.HandleFunc("DELETE /api/v1/tweet", auth_middleware.Handle(handlers.DeleteTweet))
 
 	go func() {
 		http.ListenAndServe(":"+cfg.Port, nil)
