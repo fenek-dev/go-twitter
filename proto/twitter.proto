@@ -14,6 +14,8 @@ service AuthService {
   rpc Register (RegisterRequest) returns (RegisterResponse);
   // Login logs in a user and returns an auth token.
   rpc Login (LoginRequest) returns (LoginResponse);
+
+  rpc Verify (VerifyRequest) returns (VerifyResponse);
 }
 
 message RegisterRequest {
@@ -32,6 +34,14 @@ message LoginRequest {
 
 message LoginResponse {
   string token = 1; // Auth token of the logged in user.
+}
+
+message VerifyRequest {
+  string token = 1;
+}
+
+message VerifyResponse {
+  User user = 1;
 }
 
 
@@ -57,10 +67,9 @@ message Tweet {
 
 message User {
   string username = 1;
-  bytes pass_hash = 2;
-  string description = 3;
-  google.protobuf.Timestamp created_at = 4;
-  google.protobuf.Timestamp updated_at = 5;
+  string description = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp updated_at = 4;
 }
 
 message CreateTweetRequest {
