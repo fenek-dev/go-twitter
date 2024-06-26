@@ -1,10 +1,11 @@
-import { Button } from "./components/ui/button";
+import { ThemeProvider } from "./components/theme-provider";
+import { LoginPage } from "./pages/Login";
 
 function App() {
   return (
-    <>
-      <Button>hello</Button>
-    </>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <LoginPage />
+    </ThemeProvider>
   );
 }
 
