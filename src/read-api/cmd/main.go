@@ -9,8 +9,10 @@ import (
 
 	"github.com/fenek-dev/go-twitter/src/cache/pkg/client"
 	"github.com/fenek-dev/go-twitter/src/common"
+	"github.com/fenek-dev/go-twitter/src/common/middlewares"
 	"github.com/fenek-dev/go-twitter/src/read-api/config"
 	"github.com/fenek-dev/go-twitter/src/read-api/internal/handlers"
+	sso_grpc "github.com/fenek-dev/go-twitter/src/sso/pkg/client"
 )
 
 func main() {
@@ -25,8 +27,17 @@ func main() {
 	}
 	cache := client.NewService()
 
+	sso, err := sso_grpc.New(cfg.SsoUrl)
+	if err != nil {
+		panic("Could not connect to sso grpc server.")
+	}
+	sso_service := sso.NewService()
+
 	handlers := handlers.New(cache)
 
+	auth_middleware := middlewares.NewAuthMiddleware(sso_service)
+
+	http.HandleFunc("GET /api/v1/me", auth_middleware.Handle(handlers.Me))
 	http.HandleFunc("GET /api/v1/tweet/{id}", handlers.FindTweetById)
 	http.HandleFunc("GET /api/v1/user/{id}", handlers.FindUserById)
 
