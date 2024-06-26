@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
+import { Link } from "react-router-dom";
 
 const formSchema = z.object({
   username: z.string().min(2).max(30),
@@ -70,7 +71,11 @@ export const RegisterForm = () => {
               )}
             />
             <div className="flex justify-between">
-              <Button variant="outline">Login</Button>
+              <Link to="/login">
+                <Button variant="outline" type="button">
+                  Login
+                </Button>
+              </Link>
               <Button type="submit">Submit</Button>
             </div>
           </form>
