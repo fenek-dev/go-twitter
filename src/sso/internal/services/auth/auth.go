@@ -23,7 +23,7 @@ type UserStorage interface {
 		ctx context.Context,
 		username string,
 		passHash []byte,
-	) (usrname string, err error)
+	) (user models.User, err error)
 	User(ctx context.Context, username string) (models.User, error)
 }
 
@@ -67,14 +67,21 @@ func (a *Auth) RegisterNewUser(ctx context.Context, username string, pass string
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
-	urname, err := a.userStorage.SaveUser(ctx, username, passHash)
+	user, err := a.userStorage.SaveUser(ctx, username, passHash)
 	if err != nil {
 		log.Error("failed to save user", sl.Err(err))
 
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
-	return urname, nil
+	token, err := lib.NewToken(user, a.secret, a.tokenTTL)
+	if err != nil {
+		a.log.Error("failed to generate token", sl.Err(err))
+
+		return "", fmt.Errorf("%s: %w", op, err)
+	}
+
+	return token, nil
 }
 
 func (a *Auth) Login(

@@ -16,7 +16,7 @@ func (s *Services) Register(ctx context.Context, username, password string) (str
 		return "", err
 	}
 
-	return res.Username, nil
+	return res.Token, nil
 }
 
 func (s *Services) Login(ctx context.Context, username, password string) (string, error) {

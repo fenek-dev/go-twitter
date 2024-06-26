@@ -27,7 +27,7 @@ type Auth interface {
 		ctx context.Context,
 		username string,
 		password string,
-	) (usrname string, err error)
+	) (token string, err error)
 	Verify(
 		ctx context.Context,
 		token string,
@@ -74,7 +74,7 @@ func (s *serverAPI) Register(
 		return nil, status.Error(codes.InvalidArgument, "password is required")
 	}
 
-	urname, err := s.auth.RegisterNewUser(ctx, in.GetUsername(), in.GetPassword())
+	token, err := s.auth.RegisterNewUser(ctx, in.GetUsername(), in.GetPassword())
 	if err != nil {
 		// if errors.Is(err, storage.ErrUserExists) {
 		// 	return nil, status.Error(codes.AlreadyExists, "user already exists")
@@ -83,7 +83,7 @@ func (s *serverAPI) Register(
 		return nil, status.Error(codes.Internal, "failed to register user")
 	}
 
-	return &ssov1.RegisterResponse{Username: urname}, nil
+	return &ssov1.RegisterResponse{Token: token}, nil
 }
 
 func (s *serverAPI) Verify(

@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/fenek-dev/go-twitter/src/common/models"
 	"github.com/jackc/pgx/v5"
@@ -18,17 +19,29 @@ func NewRepository(conn *pgx.Conn) *UserRepository {
 	}
 }
 
-func (u *UserRepository) SaveUser(ctx context.Context, username string, passHash []byte) (string, error) {
+func (u *UserRepository) SaveUser(ctx context.Context, username string, passHash []byte) (models.User, error) {
 	const op = "storage.pg.SaveUser"
 
-	var usrname string
-	err := u.conn.QueryRow(ctx, "INSERT INTO users(username, password) VALUES($1, $2) RETURNING username", username, passHash).Scan(&usrname)
+	var user models.User
+
+	rows, err := u.conn.Query(ctx, "INSERT INTO users(username, password, created_at, updated_at) VALUES($1, $2, $3, $4) RETURNING *",
+		username,
+		passHash,
+		time.Now(),
+		time.Now(),
+	)
 
 	if err != nil {
-		return "", fmt.Errorf("%s: %w", op, err)
+		return user, fmt.Errorf("%s: %w", op, err)
 	}
 
-	return usrname, nil
+	user, err = pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
+
+	if err != nil {
+		return user, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return user, nil
 }
 
 func (u *UserRepository) User(ctx context.Context, username string) (models.User, error) {
