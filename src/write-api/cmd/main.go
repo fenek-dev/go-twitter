@@ -14,6 +14,7 @@ import (
 	"github.com/fenek-dev/go-twitter/src/write-api/config"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/handlers"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/services"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -40,15 +41,21 @@ func main() {
 
 	auth_middleware := middlewares.NewAuthMiddleware(sso_service)
 
-	http.HandleFunc("POST /api/v1/register", handlers.Register)
-	http.HandleFunc("POST /api/v1/login", handlers.Login)
+	mux := http.NewServeMux()
 
-	http.HandleFunc("PUT /api/v1/tweet", auth_middleware.Handle(handlers.CreateTweet))
-	http.HandleFunc("PATCH /api/v1/tweet", auth_middleware.Handle(handlers.UpdateTweet))
-	http.HandleFunc("DELETE /api/v1/tweet", auth_middleware.Handle(handlers.DeleteTweet))
+	mux.HandleFunc("POST /api/v1/register", handlers.Register)
+	mux.HandleFunc("POST /api/v1/login", handlers.Login)
 
+	mux.HandleFunc("PUT /api/v1/tweet", auth_middleware.Handle(handlers.CreateTweet))
+	mux.HandleFunc("PATCH /api/v1/tweet", auth_middleware.Handle(handlers.UpdateTweet))
+	mux.HandleFunc("DELETE /api/v1/tweet", auth_middleware.Handle(handlers.DeleteTweet))
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173"},
+		AllowCredentials: true,
+	})
+	handler := c.Handler(mux)
 	go func() {
-		http.ListenAndServe(":"+cfg.Port, nil)
+		http.ListenAndServe(":"+cfg.Port, handler)
 	}()
 
 	stop := make(chan os.Signal, 1)

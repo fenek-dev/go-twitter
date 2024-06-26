@@ -13,6 +13,7 @@ import (
 	"github.com/fenek-dev/go-twitter/src/read-api/config"
 	"github.com/fenek-dev/go-twitter/src/read-api/internal/handlers"
 	sso_grpc "github.com/fenek-dev/go-twitter/src/sso/pkg/client"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -37,12 +38,18 @@ func main() {
 
 	auth_middleware := middlewares.NewAuthMiddleware(sso_service)
 
-	http.HandleFunc("GET /api/v1/me", auth_middleware.Handle(handlers.Me))
-	http.HandleFunc("GET /api/v1/tweet/{id}", handlers.FindTweetById)
-	http.HandleFunc("GET /api/v1/user/{id}", handlers.FindUserById)
+	mux := http.NewServeMux()
 
+	mux.HandleFunc("GET /api/v1/me", auth_middleware.Handle(handlers.Me))
+	mux.HandleFunc("GET /api/v1/tweet/{id}", handlers.FindTweetById)
+	mux.HandleFunc("GET /api/v1/user/{id}", handlers.FindUserById)
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173"},
+		AllowCredentials: true,
+	})
+	handler := c.Handler(mux)
 	go func() {
-		http.ListenAndServe(":"+cfg.Port, nil)
+		http.ListenAndServe(":"+cfg.Port, handler)
 	}()
 
 	stop := make(chan os.Signal, 1)
