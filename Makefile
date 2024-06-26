@@ -3,6 +3,9 @@ PROJECTNAME=$(shell basename "$(PWD)")
 local:
 	make -j 5 db-up sso cache write-api read-api 
 
+storage:
+	make -j 2 db-up redis
+
 protogen:
 	export PATH="$PATH:$(go env GOPATH)/bin" && protoc -I proto proto/twitter.proto --go_out=./proto/protogen/ --go_opt=paths=source_relative --go-grpc_out=./proto/protogen/ --go-grpc_opt=paths=source_relative
 
