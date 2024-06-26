@@ -17,7 +17,9 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { loginMutation } from "../../queries/user";
 
 const formSchema = z.object({
   username: z.string().min(2).max(30),
@@ -25,6 +27,8 @@ const formSchema = z.object({
 });
 
 export const LoginForm = () => {
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -33,8 +37,15 @@ export const LoginForm = () => {
     },
   });
 
+  const mutation = useMutation({
+    mutationFn: loginMutation,
+    onSuccess: () => {
+      navigate("/");
+    },
+  });
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    mutation.mutate(values);
   }
   return (
     <Card className="w-[350px]">
