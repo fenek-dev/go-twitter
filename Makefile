@@ -3,7 +3,7 @@ PROJECTNAME=$(shell basename "$(PWD)")
 local:
 	make -j 5 db-up sso cache write-api read-api 
 
-storage:
+storage-up:
 	make -j 2 db-up redis
 
 protogen:
