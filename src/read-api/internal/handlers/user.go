@@ -12,6 +12,7 @@ func (h *Handlers) Me(w http.ResponseWriter, r *http.Request) {
 	user, ok := r.Context().Value(common.REQUEST_CTX_USER).(models.User)
 	if !ok {
 		common.SendResponse(w, http.StatusInternalServerError, "Something gone wrong", nil)
+		return
 	}
 
 	common.SendResponse(w, http.StatusOK, "ok", user)
