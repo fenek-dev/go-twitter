@@ -29,6 +29,24 @@ func TestSendResponse(t *testing.T) {
 				data:    nil,
 			},
 		},
+		{
+			name: "Internal server error response",
+			args: args{
+				w:       httptest.NewRecorder(),
+				code:    http.StatusInternalServerError,
+				message: "Internal server error",
+				data:    nil,
+			},
+		},
+		{
+			name: "Request with data",
+			args: args{
+				w:       httptest.NewRecorder(),
+				code:    http.StatusOK,
+				message: "OK",
+				data:    map[string]string{"key": "value"},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
