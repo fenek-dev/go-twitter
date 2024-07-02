@@ -11,6 +11,14 @@ type Response struct {
 	Data    interface{} `json:"data"`
 }
 
+func NewResponse(code int, message string, data interface{}) *Response {
+	return &Response{
+		Code:    code,
+		Message: message,
+		Data:    data,
+	}
+}
+
 func SendResponse(w http.ResponseWriter, code int, message string, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	response := Response{
