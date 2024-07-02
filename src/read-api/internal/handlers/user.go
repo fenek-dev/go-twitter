@@ -22,7 +22,7 @@ func (h *Handlers) FindUserById(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
 	if id == "" {
-		common.SendResponse(w, http.StatusBadRequest, "Incorrect id", nil)
+		common.SendResponse(w, http.StatusBadRequest, "incorrect_id", nil)
 		return
 	}
 
