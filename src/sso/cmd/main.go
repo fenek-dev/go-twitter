@@ -19,13 +19,15 @@ func main() {
 	cfg := config.MustLoad()
 	storage := pg.New(ctx, cfg.DBUrl)
 
+	trace := common.Init(ctx, "Auth")
+
 	defer storage.Close(ctx)
 
 	log := common.SetupLogger(cfg.Env)
 
-	user_repository := user_domain.NewRepository(storage)
+	user_repository := user_domain.NewRepository(storage, trace)
 
-	auth_service := auth.New(log, user_repository, cfg.TokenTTL, cfg.Secret)
+	auth_service := auth.New(trace, log, user_repository, cfg.TokenTTL, cfg.Secret)
 
 	grpc_server := app.New(log, auth_service, cfg.GRPC.Port)
 
