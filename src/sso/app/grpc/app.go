@@ -7,6 +7,7 @@ import (
 
 	grpc_server "github.com/fenek-dev/go-twitter/src/sso/internal/adapters/grpc"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 )
 
@@ -17,9 +18,12 @@ type App struct {
 }
 
 func New(log *slog.Logger, authService grpc_server.Auth, port int) *App {
-	gRPCServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
-		recovery.UnaryServerInterceptor(),
-	))
+	gRPCServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			recovery.UnaryServerInterceptor(),
+		),
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
+	)
 
 	grpc_server.Register(gRPCServer, authService)
 
