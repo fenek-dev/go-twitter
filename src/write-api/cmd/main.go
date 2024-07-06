@@ -15,11 +15,15 @@ import (
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/handlers"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/services"
 	"github.com/rs/cors"
+
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 func main() {
-	_ = context.Background()
+	ctx := context.Background()
 	cfg := config.MustLoad()
+
+	tracer := common.Init(ctx, "main")
 
 	log := common.SetupLogger(cfg.Env)
 
@@ -35,25 +39,36 @@ func main() {
 	}
 	cache := client.NewService()
 
-	services := services.New(sso_service, cache)
+	services := services.New(sso_service, cache, tracer)
 
-	handlers := handlers.New(services, log)
+	handlers := handlers.New(services, log, tracer)
 
 	auth_middleware := middlewares.NewAuthMiddleware(sso_service)
 
 	mux := http.NewServeMux()
+	// handleFunc is a replacement for mux.HandleFunc
+	// which enriches the handler's HTTP instrumentation with the pattern as the http.route.
+	handleFunc := func(pattern string, handlerFunc func(http.ResponseWriter, *http.Request)) {
+		// Configure the "http.route" for the HTTP instrumentation.
+		handler := otelhttp.WithRouteTag(pattern, http.HandlerFunc(handlerFunc))
+		mux.Handle(pattern, handler)
+	}
 
-	mux.HandleFunc("POST /api/v1/register", handlers.Register)
-	mux.HandleFunc("POST /api/v1/login", handlers.Login)
+	handleFunc("POST /api/v1/register", handlers.Register)
+	handleFunc("POST /api/v1/login", handlers.Login)
 
-	mux.HandleFunc("PUT /api/v1/tweet", auth_middleware.Handle(handlers.CreateTweet))
-	mux.HandleFunc("PATCH /api/v1/tweet", auth_middleware.Handle(handlers.UpdateTweet))
-	mux.HandleFunc("DELETE /api/v1/tweet", auth_middleware.Handle(handlers.DeleteTweet))
+	handleFunc("PUT /api/v1/tweet", auth_middleware.Handle(handlers.CreateTweet))
+	handleFunc("PATCH /api/v1/tweet", auth_middleware.Handle(handlers.UpdateTweet))
+	handleFunc("DELETE /api/v1/tweet", auth_middleware.Handle(handlers.DeleteTweet))
+
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
 		AllowCredentials: true,
 	})
-	handler := c.Handler(mux)
+	corsHandler := c.Handler(mux)
+
+	handler := otelhttp.NewHandler(corsHandler, "/")
+
 	go func() {
 		http.ListenAndServe(":"+cfg.Port, handler)
 	}()
