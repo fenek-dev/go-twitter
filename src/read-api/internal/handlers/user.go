@@ -9,7 +9,9 @@ import (
 )
 
 func (h *Handlers) Me(w http.ResponseWriter, r *http.Request) {
-	user, ok := r.Context().Value(common.REQUEST_CTX_USER).(models.User)
+	ctx, span := h.tr.Start(r.Context(), "read.Me")
+	defer span.End()
+	user, ok := ctx.Value(common.REQUEST_CTX_USER).(models.User)
 	if !ok {
 		common.SendResponse(w, http.StatusInternalServerError, "Something gone wrong", nil)
 		return
@@ -20,13 +22,15 @@ func (h *Handlers) Me(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handlers) FindUserById(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
+	ctx, span := h.tr.Start(r.Context(), "read.FindUserById")
+	defer span.End()
 
 	if id == "" {
 		common.SendResponse(w, http.StatusBadRequest, "incorrect_id", nil)
 		return
 	}
 
-	tweet, err := h.db.FindUserById(r.Context(), &proto.FindUserByIdRequest{Id: id})
+	tweet, err := h.db.FindUserById(ctx, &proto.FindUserByIdRequest{Id: id})
 	if err != nil {
 		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return

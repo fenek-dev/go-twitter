@@ -23,7 +23,7 @@ func main() {
 	ctx := context.Background()
 	cfg := config.MustLoad()
 
-	tracer := common.Init(ctx, "main")
+	tracer := common.Init(ctx, "write-api")
 
 	log := common.SetupLogger(cfg.Env)
 

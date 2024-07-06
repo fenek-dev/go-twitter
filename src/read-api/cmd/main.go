@@ -17,8 +17,10 @@ import (
 )
 
 func main() {
-	_ = context.Background()
+	ctx := context.Background()
 	cfg := config.MustLoad()
+
+	tracer := common.Init(ctx, "read-api")
 
 	log := common.SetupLogger(cfg.Env)
 
@@ -34,7 +36,7 @@ func main() {
 	}
 	sso_service := sso.NewService()
 
-	handlers := handlers.New(cache)
+	handlers := handlers.New(cache, tracer)
 
 	auth_middleware := middlewares.NewAuthMiddleware(sso_service)
 
