@@ -1,22 +1,22 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/fenek-dev/go-twitter/src/common"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/dto"
+	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel/attribute"
 )
 
-func (h *Handlers) Register(w http.ResponseWriter, r *http.Request) {
-	ctx, span := h.tracer.Start(r.Context(), "Register")
+func (h *Handlers) Register(c *gin.Context) {
+	ctx, span := h.tracer.Start(c.Request.Context(), "write.handler.register")
 	defer span.End()
 	var data dto.RegisterDto
 
-	err := json.NewDecoder(r.Body).Decode(&data)
+	err := c.BindJSON(&data)
 	if err != nil {
-		common.SendResponse(w, http.StatusBadRequest, err.Error(), nil)
+		common.SendResponse(c.Writer, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
@@ -25,24 +25,24 @@ func (h *Handlers) Register(w http.ResponseWriter, r *http.Request) {
 
 	token, err := h.service.Register(ctx, data.Username, data.Password)
 	if err != nil || token == "" {
-		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
+		common.SendResponse(c.Writer, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
 	tokenCookie := createTokenCookie(token)
-	http.SetCookie(w, tokenCookie)
+	http.SetCookie(c.Writer, tokenCookie)
 
-	common.SendResponse(w, http.StatusCreated, "ok", nil)
+	common.SendResponse(c.Writer, http.StatusCreated, "ok", nil)
 }
 
-func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
-	ctx, span := h.tracer.Start(r.Context(), "Login")
+func (h *Handlers) Login(c *gin.Context) {
+	ctx, span := h.tracer.Start(c.Request.Context(), "write.handler.login")
 	defer span.End()
 	var data dto.LoginDto
 
-	err := json.NewDecoder(r.Body).Decode(&data)
+	err := c.BindJSON(&data)
 	if err != nil {
-		common.SendResponse(w, http.StatusBadRequest, err.Error(), nil)
+		common.SendResponse(c.Writer, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
@@ -51,14 +51,14 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 
 	token, err := h.service.Login(ctx, data.Username, data.Password)
 	if err != nil || token == "" {
-		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
+		common.SendResponse(c.Writer, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
 	tokenCookie := createTokenCookie(token)
-	http.SetCookie(w, tokenCookie)
+	http.SetCookie(c.Writer, tokenCookie)
 
-	common.SendResponse(w, http.StatusCreated, "ok", token)
+	common.SendResponse(c.Writer, http.StatusCreated, "ok", token)
 }
 
 func createTokenCookie(token string) *http.Cookie {

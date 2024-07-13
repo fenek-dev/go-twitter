@@ -7,7 +7,7 @@ import (
 )
 
 func (s *Services) Register(ctx context.Context, username, password string) (string, error) {
-	ctx, span := s.tracer.Start(ctx, "Register service")
+	ctx, span := s.tracer.Start(ctx, "write.service.Register")
 	defer span.End()
 	res, err := s.sso.Register(ctx, &ssov1.RegisterRequest{
 		Username: username,
@@ -22,7 +22,7 @@ func (s *Services) Register(ctx context.Context, username, password string) (str
 }
 
 func (s *Services) Login(ctx context.Context, username, password string) (string, error) {
-	ctx, span := s.tracer.Start(ctx, "Login service")
+	ctx, span := s.tracer.Start(ctx, "write.service.Login")
 	defer span.End()
 	res, err := s.sso.Login(ctx, &ssov1.LoginRequest{
 		Username: username,

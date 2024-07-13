@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -14,17 +13,21 @@ import (
 	"github.com/fenek-dev/go-twitter/src/write-api/config"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/handlers"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/services"
-	"github.com/rs/cors"
+	cors "github.com/rs/cors/wrapper/gin"
 
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel"
+)
+
+const (
+	SERVICE_NAME = "write-api"
 )
 
 func main() {
 	ctx := context.Background()
 	cfg := config.MustLoad()
 
-	tp := common.Init(ctx, "write-api")
+	tp := common.Init(ctx, SERVICE_NAME)
 	defer tp.Shutdown(ctx)
 	log := common.SetupLogger(cfg.Env)
 
@@ -40,7 +43,7 @@ func main() {
 	}
 	cache := client.NewService()
 
-	tracer := otel.Tracer("write-api")
+	tracer := otel.Tracer(SERVICE_NAME)
 
 	services := services.New(sso_service, cache, tracer)
 
@@ -48,32 +51,26 @@ func main() {
 
 	auth_middleware := middlewares.NewAuthMiddleware(sso_service)
 
-	mux := http.NewServeMux()
-	// handleFunc is a replacement for mux.HandleFunc
-	// which enriches the handler's HTTP instrumentation with the pattern as the http.route.
-	handleFunc := func(pattern string, handlerFunc func(http.ResponseWriter, *http.Request)) {
-		// Configure the "http.route" for the HTTP instrumentation.
-		handler := otelhttp.WithRouteTag(pattern, http.HandlerFunc(handlerFunc))
-		mux.Handle(pattern, handler)
-	}
-
-	handleFunc("POST /api/v1/register", handlers.Register)
-	handleFunc("POST /api/v1/login", handlers.Login)
-
-	handleFunc("PUT /api/v1/tweet", auth_middleware.Handle(handlers.CreateTweet))
-	handleFunc("PATCH /api/v1/tweet", auth_middleware.Handle(handlers.UpdateTweet))
-	handleFunc("DELETE /api/v1/tweet", auth_middleware.Handle(handlers.DeleteTweet))
+	r := handlers.Router
+	r.Use(otelgin.Middleware(SERVICE_NAME))
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
 		AllowCredentials: true,
 	})
-	corsHandler := c.Handler(mux)
+	r.Use(c)
 
-	handler := otelhttp.NewHandler(corsHandler, "/")
+	v1 := r.Group("/api/v1")
+	v1.POST("/register", handlers.Register)
+	v1.POST("/login", handlers.Login)
+
+	v1s := v1.Group("", auth_middleware.Handle())
+	v1s.PUT("/tweet", handlers.CreateTweet)
+	v1s.PATCH(" /tweet", handlers.UpdateTweet)
+	v1s.DELETE("/tweet", handlers.DeleteTweet)
 
 	go func() {
-		http.ListenAndServe(":"+cfg.Port, handler)
+		r.Run(":" + cfg.Port)
 	}()
 
 	stop := make(chan os.Signal, 1)

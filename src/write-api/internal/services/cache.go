@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Services) CreateTweet(ctx context.Context, username, content string) (*models.Tweet, error) {
-	ctx, span := s.tracer.Start(ctx, "write.CreateTweet")
+	ctx, span := s.tracer.Start(ctx, "write.service.CreateTweet")
 	defer span.End()
 	res, err := s.cache.CreateTweet(ctx, &proto.CreateTweetRequest{
 		Username: username,
@@ -24,7 +24,7 @@ func (s *Services) CreateTweet(ctx context.Context, username, content string) (*
 }
 
 func (s *Services) UpdateTweet(ctx context.Context, id, content string) (*models.Tweet, error) {
-	ctx, span := s.tracer.Start(ctx, "write.UpdateTweet")
+	ctx, span := s.tracer.Start(ctx, "write.handler.UpdateTweet")
 	defer span.End()
 	res, err := s.cache.UpdateTweet(ctx, &proto.UpdateTweetRequest{
 		Id:      id,

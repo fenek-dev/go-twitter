@@ -1,66 +1,70 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/fenek-dev/go-twitter/src/common"
-	"github.com/fenek-dev/go-twitter/src/common/models"
+	"github.com/fenek-dev/go-twitter/src/common/middlewares"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/dto"
+	"github.com/gin-gonic/gin"
 )
 
-func (h *Handlers) CreateTweet(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) CreateTweet(c *gin.Context) {
 	var data *dto.CreateDto
 
-	user := r.Context().Value(common.REQUEST_CTX_USER).(models.User)
-
-	err := json.NewDecoder(r.Body).Decode(&data)
-	if err != nil {
-		common.SendResponse(w, http.StatusBadRequest, err.Error(), nil)
+	user, ok := middlewares.UserFromCtx(c)
+	if !ok {
+		common.SendResponse(c.Writer, http.StatusInternalServerError, "Could not get user from context", nil)
 		return
 	}
 
-	tweet, err := h.service.CreateTweet(r.Context(), user.Username, data.Content)
+	err := c.BindJSON(&data)
 	if err != nil {
-		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
+		common.SendResponse(c.Writer, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
-	common.SendResponse(w, http.StatusCreated, "ok", tweet)
+	tweet, err := h.service.CreateTweet(c.Request.Context(), user.Username, data.Content)
+	if err != nil {
+		common.SendResponse(c.Writer, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+
+	common.SendResponse(c.Writer, http.StatusCreated, "ok", tweet)
 }
 
-func (h *Handlers) UpdateTweet(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) UpdateTweet(c *gin.Context) {
 	var data *dto.UpdateDto
 
-	err := json.NewDecoder(r.Body).Decode(&data)
+	err := c.BindJSON(&data)
 	if err != nil {
-		common.SendResponse(w, http.StatusBadRequest, err.Error(), nil)
+		common.SendResponse(c.Writer, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
-	tweet, err := h.service.UpdateTweet(r.Context(), data.Id, data.Content)
+	tweet, err := h.service.UpdateTweet(c.Request.Context(), data.Id, data.Content)
 	if err != nil {
-		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
+		common.SendResponse(c.Writer, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
-	common.SendResponse(w, http.StatusOK, "ok", tweet)
+	common.SendResponse(c.Writer, http.StatusOK, "ok", tweet)
 }
 
-func (h *Handlers) DeleteTweet(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) DeleteTweet(c *gin.Context) {
 	var data *dto.DeleteDto
 
-	err := json.NewDecoder(r.Body).Decode(&data)
+	err := c.BindJSON(&data)
 	if err != nil {
-		common.SendResponse(w, http.StatusBadRequest, err.Error(), nil)
+		common.SendResponse(c.Writer, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
-	id, err := h.service.DeleteTweet(r.Context(), data.Id)
+	id, err := h.service.DeleteTweet(c.Request.Context(), data.Id)
 	if err != nil {
-		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
+		common.SendResponse(c.Writer, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
-	common.SendResponse(w, http.StatusOK, "ok", id)
+	common.SendResponse(c.Writer, http.StatusOK, "ok", id)
 }
