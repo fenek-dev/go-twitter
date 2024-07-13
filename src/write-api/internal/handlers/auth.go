@@ -10,7 +10,7 @@ import (
 )
 
 func (h *Handlers) Register(c *gin.Context) {
-	ctx, span := h.tracer.Start(c.Request.Context(), "write.handler.register")
+	ctx, span := h.tracer.Start(c.Request.Context(), "write.handler.Register")
 	defer span.End()
 	var data dto.RegisterDto
 
@@ -20,8 +20,7 @@ func (h *Handlers) Register(c *gin.Context) {
 		return
 	}
 
-	userAttr := attribute.String("username", data.Username)
-	span.SetAttributes(userAttr)
+	span.SetAttributes(attribute.String("username", data.Username))
 
 	token, err := h.service.Register(ctx, data.Username, data.Password)
 	if err != nil || token == "" {
@@ -36,7 +35,7 @@ func (h *Handlers) Register(c *gin.Context) {
 }
 
 func (h *Handlers) Login(c *gin.Context) {
-	ctx, span := h.tracer.Start(c.Request.Context(), "write.handler.login")
+	ctx, span := h.tracer.Start(c.Request.Context(), "write.handler.Login")
 	defer span.End()
 	var data dto.LoginDto
 
@@ -46,8 +45,7 @@ func (h *Handlers) Login(c *gin.Context) {
 		return
 	}
 
-	userAttr := attribute.String("username", data.Username)
-	span.SetAttributes(userAttr)
+	span.SetAttributes(attribute.String("username", data.Username))
 
 	token, err := h.service.Login(ctx, data.Username, data.Password)
 	if err != nil || token == "" {

@@ -7,9 +7,12 @@ import (
 	"github.com/fenek-dev/go-twitter/src/common/middlewares"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/dto"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 func (h *Handlers) CreateTweet(c *gin.Context) {
+	ctx, span := h.tracer.Start(c.Request.Context(), "write.handler.CreateTweet")
+	defer span.End()
 	var data *dto.CreateDto
 
 	user, ok := middlewares.UserFromCtx(c)
@@ -23,17 +26,22 @@ func (h *Handlers) CreateTweet(c *gin.Context) {
 		common.SendResponse(c.Writer, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
+	span.SetAttributes(attribute.String("username", data.Username), attribute.String("context", data.Content))
 
-	tweet, err := h.service.CreateTweet(c.Request.Context(), user.Username, data.Content)
+	tweet, err := h.service.CreateTweet(ctx, user.Username, data.Content)
 	if err != nil {
 		common.SendResponse(c.Writer, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
+	span.SetAttributes(attribute.String("id", tweet.ID))
+
 	common.SendResponse(c.Writer, http.StatusCreated, "ok", tweet)
 }
 
 func (h *Handlers) UpdateTweet(c *gin.Context) {
+	ctx, span := h.tracer.Start(c.Request.Context(), "write.handler.UpdateTweet")
+	defer span.End()
 	var data *dto.UpdateDto
 
 	err := c.BindJSON(&data)
@@ -42,7 +50,9 @@ func (h *Handlers) UpdateTweet(c *gin.Context) {
 		return
 	}
 
-	tweet, err := h.service.UpdateTweet(c.Request.Context(), data.Id, data.Content)
+	span.SetAttributes(attribute.String("id", data.Id), attribute.String("context", data.Content))
+
+	tweet, err := h.service.UpdateTweet(ctx, data.Id, data.Content)
 	if err != nil {
 		common.SendResponse(c.Writer, http.StatusInternalServerError, err.Error(), nil)
 		return
@@ -52,6 +62,8 @@ func (h *Handlers) UpdateTweet(c *gin.Context) {
 }
 
 func (h *Handlers) DeleteTweet(c *gin.Context) {
+	ctx, span := h.tracer.Start(c.Request.Context(), "write.handler.DeleteTweet")
+	defer span.End()
 	var data *dto.DeleteDto
 
 	err := c.BindJSON(&data)
@@ -60,7 +72,9 @@ func (h *Handlers) DeleteTweet(c *gin.Context) {
 		return
 	}
 
-	id, err := h.service.DeleteTweet(c.Request.Context(), data.Id)
+	span.SetAttributes(attribute.String("id", data.Id))
+
+	id, err := h.service.DeleteTweet(ctx, data.Id)
 	if err != nil {
 		common.SendResponse(c.Writer, http.StatusInternalServerError, err.Error(), nil)
 		return

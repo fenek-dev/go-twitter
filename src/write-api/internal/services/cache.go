@@ -24,7 +24,7 @@ func (s *Services) CreateTweet(ctx context.Context, username, content string) (*
 }
 
 func (s *Services) UpdateTweet(ctx context.Context, id, content string) (*models.Tweet, error) {
-	ctx, span := s.tracer.Start(ctx, "write.handler.UpdateTweet")
+	ctx, span := s.tracer.Start(ctx, "write.service.UpdateTweet")
 	defer span.End()
 	res, err := s.cache.UpdateTweet(ctx, &proto.UpdateTweetRequest{
 		Id:      id,
@@ -39,7 +39,7 @@ func (s *Services) UpdateTweet(ctx context.Context, id, content string) (*models
 }
 
 func (s *Services) DeleteTweet(ctx context.Context, id string) (string, error) {
-	ctx, span := s.tracer.Start(ctx, "write.DeleteTweet")
+	ctx, span := s.tracer.Start(ctx, "write.service.DeleteTweet")
 	defer span.End()
 	res, err := s.cache.DeleteTweet(ctx, &proto.DeleteTweetRequest{
 		Id: id,
