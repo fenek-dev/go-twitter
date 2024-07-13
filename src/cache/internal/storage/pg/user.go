@@ -9,17 +9,21 @@ import (
 )
 
 func (p *Postgres) FindUserById(ctx context.Context, id string) (models.User, error) {
-	const op = "read.tweet.findbyid"
+	const op = "read.tweet.FindUserById"
 	ctx, span := p.tr.Start(ctx, op)
 	defer span.End()
 
 	var user models.User
-	rows, err := p.conn.Query(ctx, "SELECT * FROM users WHERE id = $1", id)
+	queryCtx, span := p.tr.Start(ctx, op+".query")
+	rows, err := p.conn.Query(queryCtx, "SELECT * FROM users WHERE id = $1", id)
+	span.End()
 	if err != nil {
 		return user, fmt.Errorf("%s: %w", op, err)
 	}
 
+	_, span = p.tr.Start(ctx, op+".scan")
 	user, err = pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
+	span.End()
 	if err != nil {
 		return user, fmt.Errorf("%s: %w", op, err)
 	}
