@@ -57,7 +57,7 @@ func main() {
 
 	v1 := r.Group("/api/v1")
 	v1.GET("/tweet/:id", handlers.FindTweetById)
-	v1.POST("/user/:id", handlers.FindUserById)
+	v1.GET("/user/:id", handlers.FindUserById)
 
 	auth_middleware := middlewares.NewAuthMiddleware(sso_service)
 	v1s := v1.Group("", auth_middleware.Handle())
