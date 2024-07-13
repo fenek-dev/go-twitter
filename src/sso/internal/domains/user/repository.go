@@ -29,18 +29,22 @@ func (u *UserRepository) SaveUser(ctx context.Context, username string, passHash
 
 	var user models.User
 
-	rows, err := u.conn.Query(ctx, "INSERT INTO users(username, password, created_at, updated_at) VALUES($1, $2, $3, $4) RETURNING *",
+	queryCtx, span := u.tr.Start(ctx, "storage.pg.SaveUser.query")
+	rows, err := u.conn.Query(queryCtx, "INSERT INTO users(username, password, created_at, updated_at) VALUES($1, $2, $3, $4) RETURNING *",
 		username,
 		passHash,
 		time.Now(),
 		time.Now(),
 	)
+	span.End()
 
 	if err != nil {
 		return user, fmt.Errorf("%s: %w", op, err)
 	}
 
+	_, span = u.tr.Start(ctx, "storage.pg.User.scan")
 	user, err = pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
+	span.End()
 
 	if err != nil {
 		return user, fmt.Errorf("%s: %w", op, err)
@@ -55,8 +59,18 @@ func (u *UserRepository) User(ctx context.Context, username string) (models.User
 	defer span.End()
 
 	var user models.User
-	rows, _ := u.conn.Query(ctx, "SELECT * FROM users WHERE username = $1", username)
-	user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
+
+	queryCtx, span := u.tr.Start(ctx, "storage.pg.User.query")
+	rows, err := u.conn.Query(queryCtx, "SELECT * FROM users WHERE username = $1", username)
+	span.End()
+
+	if err != nil {
+		return user, fmt.Errorf("%s: %w", op, err)
+	}
+
+	_, span = u.tr.Start(ctx, "storage.pg.User.scan")
+	user, err = pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
+	span.End()
 	if err != nil {
 		return user, fmt.Errorf("%s: %w", op, err)
 	}

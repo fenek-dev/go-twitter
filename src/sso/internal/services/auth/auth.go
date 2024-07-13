@@ -66,7 +66,9 @@ func (a *Auth) RegisterNewUser(ctx context.Context, username string, pass string
 
 	log.Info("registering user")
 
+	_, span = a.tr.Start(ctx, op+".GenerateFromPassword")
 	passHash, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+	span.End()
 	if err != nil {
 		log.Error("failed to generate password hash", sl.Err(err))
 
@@ -80,7 +82,9 @@ func (a *Auth) RegisterNewUser(ctx context.Context, username string, pass string
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
+	_, span = a.tr.Start(ctx, op+".NewToken")
 	token, err := lib.NewToken(user, a.secret, a.tokenTTL)
+	span.End()
 	if err != nil {
 		a.log.Error("failed to generate token", sl.Err(err))
 
@@ -119,16 +123,20 @@ func (a *Auth) Login(
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
+	_, span = a.tr.Start(ctx, op+".CompareHashAndPassword")
 	if err := bcrypt.CompareHashAndPassword(user.PassHash, []byte(password)); err != nil {
 		a.log.Info("invalid credentials", sl.Err(err))
 
 		return "", fmt.Errorf("%s: %w", op, ErrInvalidCredentials)
 	}
+	span.End()
 
 	log.Info("user logged in successfully")
 
 	// Создаём токен авторизации
+	_, span = a.tr.Start(ctx, op+".NewToken")
 	token, err := lib.NewToken(user, a.secret, a.tokenTTL)
+	span.End()
 	if err != nil {
 		a.log.Error("failed to generate token", sl.Err(err))
 
@@ -151,7 +159,10 @@ func (a *Auth) Verify(
 	)
 
 	// Создаём токен авторизации
+
+	_, span = a.tr.Start(ctx, op+".GetFromToken")
 	claims, err := lib.GetFromToken(token, a.secret)
+	span.End()
 	if err != nil {
 		log.Error("failed to verify token", sl.Err(err))
 
