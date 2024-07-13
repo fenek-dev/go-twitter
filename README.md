@@ -1,9 +1,3 @@
 # go-twitter
 
-`docker-compose -f=db/docker-compose.yaml -p=pg_twitter up`
-
-golang-migrate
-`migrate -database "postgres://user:password@localhost:5432/twitter?sslmode=disable" -path db/migrations up`
-
-protoc
-`protoc -I proto proto/*.proto --go_out=./src/auth/protogen/ --go_opt=paths=source_relative --go-grpc_out=./src/auth/protogen/ --go-grpc_opt=paths=source_relative`
+`oha -m PUT -H "Cookie: go_twitter_auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXNjcmlwdGlvbiI6IiIsImV4cCI6MTcyMDg4NTExOSwidXNlcm5hbWUiOiJEZXJlY2suUGZlZmZlciJ9.Li9LfzjBKAuje9b8ll_2xBnTlXMnjCFYiMvmZUN-Ajw" -H "Content-Type: application/json" -d '{"username":"Vernie88","content":"Similique sunt nesciunt."}' -c 200 -n 100000 http://localhost:8000/api/v1/tweet`

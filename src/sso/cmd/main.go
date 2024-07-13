@@ -18,12 +18,12 @@ import (
 func main() {
 	ctx := context.Background()
 	cfg := config.MustLoad()
-	storage := pg.New(ctx, cfg.DBUrl)
+	storage := pg.New(ctx, cfg.DBUrl, 100)
 
 	trace := common.Init(ctx, "auth")
 	defer trace.Shutdown(ctx)
 
-	defer storage.Close(ctx)
+	defer storage.Close()
 
 	log := common.SetupLogger(cfg.Env)
 

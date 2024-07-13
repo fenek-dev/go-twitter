@@ -4,12 +4,18 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func New(ctx context.Context, DBUrl string) *pgx.Conn {
+func New(ctx context.Context, DBUrl string, maxConns int32) *pgxpool.Pool {
 
-	conn, err := pgx.Connect(ctx, DBUrl)
+	cfg, err := pgxpool.ParseConfig(DBUrl)
+	if err != nil {
+		panic(fmt.Sprintf("can not parse db config: %s", err.Error()))
+	}
+	cfg.MaxConns = maxConns
+
+	conn, err := pgxpool.New(ctx, DBUrl)
 
 	if err != nil {
 		panic(fmt.Sprintf("can not connect to db: %s", err.Error()))

@@ -7,15 +7,16 @@ import (
 
 	"github.com/fenek-dev/go-twitter/src/common/models"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.opentelemetry.io/otel/trace"
 )
 
 type UserRepository struct {
-	conn *pgx.Conn
+	conn *pgxpool.Pool
 	tr   trace.Tracer
 }
 
-func NewRepository(conn *pgx.Conn, tr trace.Tracer) *UserRepository {
+func NewRepository(conn *pgxpool.Pool, tr trace.Tracer) *UserRepository {
 	return &UserRepository{
 		conn: conn,
 		tr:   tr,
