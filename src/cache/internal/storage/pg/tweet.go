@@ -11,6 +11,8 @@ import (
 
 func (p *Postgres) FindTweetById(ctx context.Context, id string) (models.Tweet, error) {
 	const op = "read.tweet.findbyid"
+	ctx, span := p.tr.Start(ctx, op)
+	defer span.End()
 
 	var tweet models.Tweet
 	rows, err := p.conn.Query(ctx, "SELECT * FROM tweets WHERE id = $1", id)
@@ -28,6 +30,8 @@ func (p *Postgres) FindTweetById(ctx context.Context, id string) (models.Tweet, 
 
 func (p *Postgres) CreateTweet(ctx context.Context, username, content string) (models.Tweet, error) {
 	const op = "write.tweet.create"
+	ctx, span := p.tr.Start(ctx, op)
+	defer span.End()
 
 	var tweet models.Tweet
 	rows, err := p.conn.Query(ctx, "INSERT INTO tweets(username, content, created_at, updated_at) VALUES($1, $2, $3, $4) RETURNING *",
@@ -50,6 +54,8 @@ func (p *Postgres) CreateTweet(ctx context.Context, username, content string) (m
 
 func (p *Postgres) UpdateTweet(ctx context.Context, id, content string) (models.Tweet, error) {
 	const op = "write.tweet.update"
+	ctx, span := p.tr.Start(ctx, op)
+	defer span.End()
 
 	var tweet models.Tweet
 	rows, err := p.conn.Query(ctx, "UPDATE tweets SET content = $1, updated_at = $3 WHERE id = $2 RETURNING *",
@@ -71,6 +77,8 @@ func (p *Postgres) UpdateTweet(ctx context.Context, id, content string) (models.
 
 func (p *Postgres) DeleteTweet(ctx context.Context, id string) error {
 	const op = "write.tweet.delete"
+	ctx, span := p.tr.Start(ctx, op)
+	defer span.End()
 
 	_, err := p.conn.Exec(ctx, "DELETE FROM tweets WHERE id = $1", id)
 

@@ -10,6 +10,8 @@ import (
 
 func (p *Postgres) FindUserById(ctx context.Context, id string) (models.User, error) {
 	const op = "read.tweet.findbyid"
+	ctx, span := p.tr.Start(ctx, op)
+	defer span.End()
 
 	var user models.User
 	rows, err := p.conn.Query(ctx, "SELECT * FROM users WHERE id = $1", id)
@@ -27,6 +29,8 @@ func (p *Postgres) FindUserById(ctx context.Context, id string) (models.User, er
 
 func (p *Postgres) SaveUser(ctx context.Context, username string, passHash []byte) (string, error) {
 	const op = "storage.pg.SaveUser"
+	ctx, span := p.tr.Start(ctx, op)
+	defer span.End()
 
 	var usrname string
 	err := p.conn.QueryRow(ctx, "INSERT INTO users(username, password) VALUES($1, $2) RETURNING username", username, passHash).Scan(&usrname)
