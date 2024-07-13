@@ -4,7 +4,6 @@ import (
 	"log/slog"
 
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/services"
-	"github.com/gin-gonic/gin"
 
 	"go.opentelemetry.io/otel/trace"
 )
@@ -14,7 +13,6 @@ type Handlers struct {
 
 	log    *slog.Logger
 	tracer trace.Tracer
-	Router *gin.Engine
 }
 
 func New(service *services.Services, log *slog.Logger, tracer trace.Tracer) *Handlers {
@@ -22,6 +20,5 @@ func New(service *services.Services, log *slog.Logger, tracer trace.Tracer) *Han
 		log:     log,
 		service: service,
 		tracer:  tracer,
-		Router:  gin.Default(),
 	}
 }

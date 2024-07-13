@@ -13,6 +13,7 @@ import (
 	"github.com/fenek-dev/go-twitter/src/write-api/config"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/handlers"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/services"
+	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
 
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
@@ -51,7 +52,7 @@ func main() {
 
 	auth_middleware := middlewares.NewAuthMiddleware(sso_service)
 
-	r := handlers.Router
+	r := gin.Default()
 	r.Use(otelgin.Middleware(SERVICE_NAME))
 
 	c := cors.New(cors.Options{
