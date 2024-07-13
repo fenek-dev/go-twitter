@@ -6,6 +6,7 @@ import (
 	ssov1 "github.com/fenek-dev/go-twitter/proto/protogen"
 	"github.com/fenek-dev/go-twitter/src/common/mappers"
 	"github.com/fenek-dev/go-twitter/src/common/models"
+	"go.opentelemetry.io/otel/trace"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -15,6 +16,7 @@ import (
 type serverAPI struct {
 	ssov1.UnimplementedAuthServiceServer
 	auth Auth
+	tr   trace.Tracer
 }
 
 type Auth interface {
@@ -34,14 +36,16 @@ type Auth interface {
 	) (user *models.User, err error)
 }
 
-func Register(gRPCServer *grpc.Server, auth Auth) {
-	ssov1.RegisterAuthServiceServer(gRPCServer, &serverAPI{auth: auth})
+func Register(gRPCServer *grpc.Server, auth Auth, tr trace.Tracer) {
+	ssov1.RegisterAuthServiceServer(gRPCServer, &serverAPI{auth: auth, tr: tr})
 }
 
 func (s *serverAPI) Login(
 	ctx context.Context,
 	in *ssov1.LoginRequest,
 ) (*ssov1.LoginResponse, error) {
+	ctx, span := s.tr.Start(ctx, "sso.grpc.Login")
+	defer span.End()
 	if in.Username == "" {
 		return nil, status.Error(codes.InvalidArgument, "username is required")
 	}
@@ -66,6 +70,8 @@ func (s *serverAPI) Register(
 	ctx context.Context,
 	in *ssov1.RegisterRequest,
 ) (*ssov1.RegisterResponse, error) {
+	ctx, span := s.tr.Start(ctx, "sso.grpc.Register")
+	defer span.End()
 	if in.Username == "" {
 		return nil, status.Error(codes.InvalidArgument, "username is required")
 	}
@@ -90,6 +96,8 @@ func (s *serverAPI) Verify(
 	ctx context.Context,
 	in *ssov1.VerifyRequest,
 ) (*ssov1.VerifyResponse, error) {
+	ctx, span := s.tr.Start(ctx, "sso.grpc.Verify")
+	defer span.End()
 	user, err := s.auth.Verify(ctx, in.Token)
 
 	if err != nil {
