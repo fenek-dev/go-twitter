@@ -1,12 +1,13 @@
 package middlewares
 
 import (
-	"context"
 	"net/http"
 
 	ssov1 "github.com/fenek-dev/go-twitter/proto/protogen"
 	"github.com/fenek-dev/go-twitter/src/common"
 	"github.com/fenek-dev/go-twitter/src/common/mappers"
+	"github.com/fenek-dev/go-twitter/src/common/models"
+	"github.com/gin-gonic/gin"
 )
 
 type Auth struct {
@@ -17,27 +18,33 @@ func NewAuthMiddleware(sso ssov1.AuthServiceClient) *Auth {
 	return &Auth{sso: sso}
 }
 
-func (a *Auth) Handle(f func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func (a *Auth) Handle() gin.HandlerFunc {
+	return func(c *gin.Context) {
 
-		token, err := r.Cookie(common.COOKIE_TOKEN_NAME)
+		token, err := c.Cookie(common.COOKIE_TOKEN_NAME)
 		if err != nil {
-			common.SendResponse(w, http.StatusUnauthorized, "Missing auth token", nil)
+			common.SendResponse(c.Writer, http.StatusUnauthorized, "Missing auth token", nil)
 			return
 		}
 
-		res, err := a.sso.Verify(r.Context(), &ssov1.VerifyRequest{Token: token.Value})
+		res, err := a.sso.Verify(c.Request.Context(), &ssov1.VerifyRequest{Token: token})
 		if err != nil {
-			common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
+			common.SendResponse(c.Writer, http.StatusInternalServerError, err.Error(), nil)
 			return
 		}
 
 		user := mappers.ProtoUserToModel(res.User)
 
-		ctx := context.WithValue(r.Context(), common.REQUEST_CTX_USER, user)
+		c.Set(common.REQUEST_CTX_USER, user)
+		c.Next()
+	}
+}
 
-		req := r.WithContext(ctx)
-
-		f(w, req)
-	})
+func UserFromCtx(c *gin.Context) (*models.User, bool) {
+	u, ok := c.Get(common.REQUEST_CTX_USER)
+	if !ok {
+		return nil, ok
+	}
+	user, ok := u.(*models.User)
+	return user, ok
 }
