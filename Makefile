@@ -41,4 +41,4 @@ db-migrate:
 	migrate -database "postgres://user:password@localhost:5432/twitter?sslmode=disable" -path migrations/pg up
 
 jaeger:
-	docker-compose -f=docker/docker-compose.jaeger.yaml -p=jeager_twitter up
+	docker compose -f=docker/docker-compose.jaeger.yaml -p=jeager_twitter up
