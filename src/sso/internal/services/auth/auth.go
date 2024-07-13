@@ -99,7 +99,7 @@ func (a *Auth) Login(
 	username string,
 	password string,
 ) (string, error) {
-	const op = "Auth.Login"
+	const op = "auth.service.Login"
 	ctx, span := a.tr.Start(ctx, op)
 	defer span.End()
 
@@ -150,7 +150,7 @@ func (a *Auth) Verify(
 	ctx context.Context,
 	token string,
 ) (*models.User, error) {
-	const op = "Auth.Verify"
+	const op = "auth.service.Verify"
 	ctx, span := a.tr.Start(ctx, op)
 	defer span.End()
 
