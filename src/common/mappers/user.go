@@ -16,8 +16,8 @@ func UserModelToProtoUser(user *models.User) *proto.User {
 	}
 }
 
-func ProtoUserToModel(user *proto.User) models.User {
-	return models.User{
+func ProtoUserToModel(user *proto.User) *models.User {
+	return &models.User{
 		Username:    user.Username,
 		Description: user.Description,
 		CreatedAt:   user.CreatedAt.AsTime(),
