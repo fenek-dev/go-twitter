@@ -11,15 +11,21 @@ import (
 	"github.com/fenek-dev/go-twitter/src/cache/internal/storage/pg"
 	"github.com/fenek-dev/go-twitter/src/cache/internal/storage/redis"
 	"github.com/fenek-dev/go-twitter/src/common"
+	"go.opentelemetry.io/otel"
 )
 
 func main() {
 	ctx := context.Background()
 	cfg := config.MustLoad()
 
+	tp := common.Init(ctx, "cache")
+	defer tp.Shutdown(ctx)
+
 	log := common.SetupLogger(cfg.Env)
 
-	storage := pg.New(ctx, cfg.DBUrl)
+	tracer := otel.Tracer("cache")
+
+	storage := pg.New(ctx, cfg.DBUrl, tracer)
 	redis := redis.New(&cfg.Redis)
 
 	grpc_server := grpc.New(log, storage, redis, cfg.GRPC.Port)

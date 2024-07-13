@@ -6,9 +6,12 @@ import (
 
 	"github.com/fenek-dev/go-twitter/src/common"
 	"github.com/fenek-dev/go-twitter/src/write-api/internal/dto"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 func (h *Handlers) Register(w http.ResponseWriter, r *http.Request) {
+	ctx, span := h.tracer.Start(r.Context(), "Register")
+	defer span.End()
 	var data dto.RegisterDto
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -17,7 +20,10 @@ func (h *Handlers) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.service.Register(r.Context(), data.Username, data.Password)
+	userAttr := attribute.String("username", data.Username)
+	span.SetAttributes(userAttr)
+
+	token, err := h.service.Register(ctx, data.Username, data.Password)
 	if err != nil || token == "" {
 		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return
@@ -30,6 +36,8 @@ func (h *Handlers) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
+	ctx, span := h.tracer.Start(r.Context(), "Login")
+	defer span.End()
 	var data dto.LoginDto
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -38,7 +46,10 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.service.Login(r.Context(), data.Username, data.Password)
+	userAttr := attribute.String("username", data.Username)
+	span.SetAttributes(userAttr)
+
+	token, err := h.service.Login(ctx, data.Username, data.Password)
 	if err != nil || token == "" {
 		common.SendResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return

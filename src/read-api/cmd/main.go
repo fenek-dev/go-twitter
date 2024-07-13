@@ -14,12 +14,15 @@ import (
 	"github.com/fenek-dev/go-twitter/src/read-api/internal/handlers"
 	sso_grpc "github.com/fenek-dev/go-twitter/src/sso/pkg/client"
 	"github.com/rs/cors"
+	"go.opentelemetry.io/otel"
 )
 
 func main() {
-	_ = context.Background()
+	ctx := context.Background()
 	cfg := config.MustLoad()
 
+	tp := common.Init(ctx, "read-api")
+	defer tp.Shutdown(ctx)
 	log := common.SetupLogger(cfg.Env)
 
 	client, err := client.New(cfg.CacheUrl)
@@ -34,7 +37,9 @@ func main() {
 	}
 	sso_service := sso.NewService()
 
-	handlers := handlers.New(cache)
+	tracer := otel.Tracer("read-api")
+
+	handlers := handlers.New(cache, tracer)
 
 	auth_middleware := middlewares.NewAuthMiddleware(sso_service)
 

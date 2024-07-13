@@ -1,18 +1,23 @@
 package services
 
 import (
-	proto "github.com/fenek-dev/go-twitter/proto/protogen"
 	ssov1 "github.com/fenek-dev/go-twitter/proto/protogen"
+
+	"go.opentelemetry.io/otel/trace"
 )
 
 type Services struct {
 	sso   ssov1.AuthServiceClient
-	cache proto.CacheServiceClient
+	cache ssov1.CacheServiceClient
+
+	tracer trace.Tracer
 }
 
-func New(sso ssov1.AuthServiceClient, cache proto.CacheServiceClient) *Services {
+func New(sso ssov1.AuthServiceClient, cache ssov1.CacheServiceClient,
+	tracer trace.Tracer) *Services {
 	return &Services{
-		sso:   sso,
-		cache: cache,
+		sso:    sso,
+		cache:  cache,
+		tracer: tracer,
 	}
 }

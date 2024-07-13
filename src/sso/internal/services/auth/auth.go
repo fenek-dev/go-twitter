@@ -11,6 +11,7 @@ import (
 	"github.com/fenek-dev/go-twitter/src/common/mappers"
 	"github.com/fenek-dev/go-twitter/src/common/models"
 	"github.com/fenek-dev/go-twitter/src/sso/internal/lib"
+	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -28,6 +29,7 @@ type UserStorage interface {
 }
 
 type Auth struct {
+	tr          trace.Tracer
 	log         *slog.Logger
 	userStorage UserStorage
 	tokenTTL    time.Duration
@@ -35,12 +37,14 @@ type Auth struct {
 }
 
 func New(
+	tr trace.Tracer,
 	log *slog.Logger,
 	userStorage UserStorage,
 	tokenTTL time.Duration,
 	secret string,
 ) *Auth {
 	return &Auth{
+		tr:          tr,
 		userStorage: userStorage,
 		log:         log,
 		tokenTTL:    tokenTTL,
@@ -52,6 +56,8 @@ func New(
 // If user with given username already exists, returns error.
 func (a *Auth) RegisterNewUser(ctx context.Context, username string, pass string) (string, error) {
 	const op = "Auth.RegisterNewUser"
+	ctx, span := a.tr.Start(ctx, op)
+	defer span.End()
 
 	log := a.log.With(
 		slog.String("op", op),
@@ -90,6 +96,8 @@ func (a *Auth) Login(
 	password string,
 ) (string, error) {
 	const op = "Auth.Login"
+	ctx, span := a.tr.Start(ctx, op)
+	defer span.End()
 
 	log := a.log.With(
 		slog.String("op", op),
@@ -135,6 +143,8 @@ func (a *Auth) Verify(
 	token string,
 ) (*models.User, error) {
 	const op = "Auth.Verify"
+	ctx, span := a.tr.Start(ctx, op)
+	defer span.End()
 
 	log := a.log.With(
 		slog.String("op", op),

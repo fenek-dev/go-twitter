@@ -7,20 +7,25 @@ import (
 
 	"github.com/fenek-dev/go-twitter/src/common/models"
 	"github.com/jackc/pgx/v5"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type UserRepository struct {
 	conn *pgx.Conn
+	tr   trace.Tracer
 }
 
-func NewRepository(conn *pgx.Conn) *UserRepository {
+func NewRepository(conn *pgx.Conn, tr trace.Tracer) *UserRepository {
 	return &UserRepository{
 		conn: conn,
+		tr:   tr,
 	}
 }
 
 func (u *UserRepository) SaveUser(ctx context.Context, username string, passHash []byte) (models.User, error) {
 	const op = "storage.pg.SaveUser"
+	ctx, span := u.tr.Start(ctx, op)
+	defer span.End()
 
 	var user models.User
 
@@ -46,6 +51,8 @@ func (u *UserRepository) SaveUser(ctx context.Context, username string, passHash
 
 func (u *UserRepository) User(ctx context.Context, username string) (models.User, error) {
 	const op = "storage.pg.User"
+	ctx, span := u.tr.Start(ctx, op)
+	defer span.End()
 
 	var user models.User
 	rows, _ := u.conn.Query(ctx, "SELECT * FROM users WHERE username = $1", username)

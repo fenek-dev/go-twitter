@@ -12,6 +12,7 @@ import (
 	"github.com/fenek-dev/go-twitter/src/sso/config"
 	user_domain "github.com/fenek-dev/go-twitter/src/sso/internal/domains/user"
 	"github.com/fenek-dev/go-twitter/src/sso/internal/services/auth"
+	"go.opentelemetry.io/otel"
 )
 
 func main() {
@@ -19,15 +20,20 @@ func main() {
 	cfg := config.MustLoad()
 	storage := pg.New(ctx, cfg.DBUrl)
 
+	trace := common.Init(ctx, "auth")
+	defer trace.Shutdown(ctx)
+
 	defer storage.Close(ctx)
 
 	log := common.SetupLogger(cfg.Env)
 
-	user_repository := user_domain.NewRepository(storage)
+	tracer := otel.Tracer("auth")
 
-	auth_service := auth.New(log, user_repository, cfg.TokenTTL, cfg.Secret)
+	user_repository := user_domain.NewRepository(storage, tracer)
 
-	grpc_server := app.New(log, auth_service, cfg.GRPC.Port)
+	auth_service := auth.New(tracer, log, user_repository, cfg.TokenTTL, cfg.Secret)
+
+	grpc_server := app.New(log, auth_service, tracer, cfg.GRPC.Port)
 
 	go func() {
 		grpc_server.MustRun()

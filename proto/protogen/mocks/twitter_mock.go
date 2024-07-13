@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	protogen "github.com/fenek-dev/go-twitter/proto/protogen"
+	ssov1 "github.com/fenek-dev/go-twitter/proto/protogen"
 	gomock "go.uber.org/mock/gomock"
 	grpc "google.golang.org/grpc"
 )
@@ -42,14 +42,14 @@ func (m *MockAuthServiceClient) EXPECT() *MockAuthServiceClientMockRecorder {
 }
 
 // Login mocks base method.
-func (m *MockAuthServiceClient) Login(ctx context.Context, in *protogen.LoginRequest, opts ...grpc.CallOption) (*protogen.LoginResponse, error) {
+func (m *MockAuthServiceClient) Login(ctx context.Context, in *ssov1.LoginRequest, opts ...grpc.CallOption) (*ssov1.LoginResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []any{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "Login", varargs...)
-	ret0, _ := ret[0].(*protogen.LoginResponse)
+	ret0, _ := ret[0].(*ssov1.LoginResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -62,14 +62,14 @@ func (mr *MockAuthServiceClientMockRecorder) Login(ctx, in any, opts ...any) *go
 }
 
 // Register mocks base method.
-func (m *MockAuthServiceClient) Register(ctx context.Context, in *protogen.RegisterRequest, opts ...grpc.CallOption) (*protogen.RegisterResponse, error) {
+func (m *MockAuthServiceClient) Register(ctx context.Context, in *ssov1.RegisterRequest, opts ...grpc.CallOption) (*ssov1.RegisterResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []any{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "Register", varargs...)
-	ret0, _ := ret[0].(*protogen.RegisterResponse)
+	ret0, _ := ret[0].(*ssov1.RegisterResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -82,14 +82,14 @@ func (mr *MockAuthServiceClientMockRecorder) Register(ctx, in any, opts ...any) 
 }
 
 // Verify mocks base method.
-func (m *MockAuthServiceClient) Verify(ctx context.Context, in *protogen.VerifyRequest, opts ...grpc.CallOption) (*protogen.VerifyResponse, error) {
+func (m *MockAuthServiceClient) Verify(ctx context.Context, in *ssov1.VerifyRequest, opts ...grpc.CallOption) (*ssov1.VerifyResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []any{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "Verify", varargs...)
-	ret0, _ := ret[0].(*protogen.VerifyResponse)
+	ret0, _ := ret[0].(*ssov1.VerifyResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -125,10 +125,10 @@ func (m *MockAuthServiceServer) EXPECT() *MockAuthServiceServerMockRecorder {
 }
 
 // Login mocks base method.
-func (m *MockAuthServiceServer) Login(arg0 context.Context, arg1 *protogen.LoginRequest) (*protogen.LoginResponse, error) {
+func (m *MockAuthServiceServer) Login(arg0 context.Context, arg1 *ssov1.LoginRequest) (*ssov1.LoginResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Login", arg0, arg1)
-	ret0, _ := ret[0].(*protogen.LoginResponse)
+	ret0, _ := ret[0].(*ssov1.LoginResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -140,10 +140,10 @@ func (mr *MockAuthServiceServerMockRecorder) Login(arg0, arg1 any) *gomock.Call 
 }
 
 // Register mocks base method.
-func (m *MockAuthServiceServer) Register(arg0 context.Context, arg1 *protogen.RegisterRequest) (*protogen.RegisterResponse, error) {
+func (m *MockAuthServiceServer) Register(arg0 context.Context, arg1 *ssov1.RegisterRequest) (*ssov1.RegisterResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Register", arg0, arg1)
-	ret0, _ := ret[0].(*protogen.RegisterResponse)
+	ret0, _ := ret[0].(*ssov1.RegisterResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -155,10 +155,10 @@ func (mr *MockAuthServiceServerMockRecorder) Register(arg0, arg1 any) *gomock.Ca
 }
 
 // Verify mocks base method.
-func (m *MockAuthServiceServer) Verify(arg0 context.Context, arg1 *protogen.VerifyRequest) (*protogen.VerifyResponse, error) {
+func (m *MockAuthServiceServer) Verify(arg0 context.Context, arg1 *ssov1.VerifyRequest) (*ssov1.VerifyResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Verify", arg0, arg1)
-	ret0, _ := ret[0].(*protogen.VerifyResponse)
+	ret0, _ := ret[0].(*ssov1.VerifyResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -240,14 +240,14 @@ func (m *MockCacheServiceClient) EXPECT() *MockCacheServiceClientMockRecorder {
 }
 
 // CreateTweet mocks base method.
-func (m *MockCacheServiceClient) CreateTweet(ctx context.Context, in *protogen.CreateTweetRequest, opts ...grpc.CallOption) (*protogen.CreateTweetResponse, error) {
+func (m *MockCacheServiceClient) CreateTweet(ctx context.Context, in *ssov1.CreateTweetRequest, opts ...grpc.CallOption) (*ssov1.CreateTweetResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []any{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "CreateTweet", varargs...)
-	ret0, _ := ret[0].(*protogen.CreateTweetResponse)
+	ret0, _ := ret[0].(*ssov1.CreateTweetResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -260,14 +260,14 @@ func (mr *MockCacheServiceClientMockRecorder) CreateTweet(ctx, in any, opts ...a
 }
 
 // DeleteTweet mocks base method.
-func (m *MockCacheServiceClient) DeleteTweet(ctx context.Context, in *protogen.DeleteTweetRequest, opts ...grpc.CallOption) (*protogen.DeleteTweetResponse, error) {
+func (m *MockCacheServiceClient) DeleteTweet(ctx context.Context, in *ssov1.DeleteTweetRequest, opts ...grpc.CallOption) (*ssov1.DeleteTweetResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []any{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "DeleteTweet", varargs...)
-	ret0, _ := ret[0].(*protogen.DeleteTweetResponse)
+	ret0, _ := ret[0].(*ssov1.DeleteTweetResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -280,14 +280,14 @@ func (mr *MockCacheServiceClientMockRecorder) DeleteTweet(ctx, in any, opts ...a
 }
 
 // FindTweetById mocks base method.
-func (m *MockCacheServiceClient) FindTweetById(ctx context.Context, in *protogen.FindTweetByIdRequest, opts ...grpc.CallOption) (*protogen.FindTweetByIdResponse, error) {
+func (m *MockCacheServiceClient) FindTweetById(ctx context.Context, in *ssov1.FindTweetByIdRequest, opts ...grpc.CallOption) (*ssov1.FindTweetByIdResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []any{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "FindTweetById", varargs...)
-	ret0, _ := ret[0].(*protogen.FindTweetByIdResponse)
+	ret0, _ := ret[0].(*ssov1.FindTweetByIdResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -300,14 +300,14 @@ func (mr *MockCacheServiceClientMockRecorder) FindTweetById(ctx, in any, opts ..
 }
 
 // FindUserById mocks base method.
-func (m *MockCacheServiceClient) FindUserById(ctx context.Context, in *protogen.FindUserByIdRequest, opts ...grpc.CallOption) (*protogen.FindUserByIdResponse, error) {
+func (m *MockCacheServiceClient) FindUserById(ctx context.Context, in *ssov1.FindUserByIdRequest, opts ...grpc.CallOption) (*ssov1.FindUserByIdResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []any{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "FindUserById", varargs...)
-	ret0, _ := ret[0].(*protogen.FindUserByIdResponse)
+	ret0, _ := ret[0].(*ssov1.FindUserByIdResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -320,14 +320,14 @@ func (mr *MockCacheServiceClientMockRecorder) FindUserById(ctx, in any, opts ...
 }
 
 // SaveUser mocks base method.
-func (m *MockCacheServiceClient) SaveUser(ctx context.Context, in *protogen.SaveUserRequest, opts ...grpc.CallOption) (*protogen.SaveUserResponse, error) {
+func (m *MockCacheServiceClient) SaveUser(ctx context.Context, in *ssov1.SaveUserRequest, opts ...grpc.CallOption) (*ssov1.SaveUserResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []any{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "SaveUser", varargs...)
-	ret0, _ := ret[0].(*protogen.SaveUserResponse)
+	ret0, _ := ret[0].(*ssov1.SaveUserResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -340,14 +340,14 @@ func (mr *MockCacheServiceClientMockRecorder) SaveUser(ctx, in any, opts ...any)
 }
 
 // UpdateTweet mocks base method.
-func (m *MockCacheServiceClient) UpdateTweet(ctx context.Context, in *protogen.UpdateTweetRequest, opts ...grpc.CallOption) (*protogen.UpdateTweetResponse, error) {
+func (m *MockCacheServiceClient) UpdateTweet(ctx context.Context, in *ssov1.UpdateTweetRequest, opts ...grpc.CallOption) (*ssov1.UpdateTweetResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []any{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "UpdateTweet", varargs...)
-	ret0, _ := ret[0].(*protogen.UpdateTweetResponse)
+	ret0, _ := ret[0].(*ssov1.UpdateTweetResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -383,10 +383,10 @@ func (m *MockCacheServiceServer) EXPECT() *MockCacheServiceServerMockRecorder {
 }
 
 // CreateTweet mocks base method.
-func (m *MockCacheServiceServer) CreateTweet(arg0 context.Context, arg1 *protogen.CreateTweetRequest) (*protogen.CreateTweetResponse, error) {
+func (m *MockCacheServiceServer) CreateTweet(arg0 context.Context, arg1 *ssov1.CreateTweetRequest) (*ssov1.CreateTweetResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateTweet", arg0, arg1)
-	ret0, _ := ret[0].(*protogen.CreateTweetResponse)
+	ret0, _ := ret[0].(*ssov1.CreateTweetResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -398,10 +398,10 @@ func (mr *MockCacheServiceServerMockRecorder) CreateTweet(arg0, arg1 any) *gomoc
 }
 
 // DeleteTweet mocks base method.
-func (m *MockCacheServiceServer) DeleteTweet(arg0 context.Context, arg1 *protogen.DeleteTweetRequest) (*protogen.DeleteTweetResponse, error) {
+func (m *MockCacheServiceServer) DeleteTweet(arg0 context.Context, arg1 *ssov1.DeleteTweetRequest) (*ssov1.DeleteTweetResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteTweet", arg0, arg1)
-	ret0, _ := ret[0].(*protogen.DeleteTweetResponse)
+	ret0, _ := ret[0].(*ssov1.DeleteTweetResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -413,10 +413,10 @@ func (mr *MockCacheServiceServerMockRecorder) DeleteTweet(arg0, arg1 any) *gomoc
 }
 
 // FindTweetById mocks base method.
-func (m *MockCacheServiceServer) FindTweetById(arg0 context.Context, arg1 *protogen.FindTweetByIdRequest) (*protogen.FindTweetByIdResponse, error) {
+func (m *MockCacheServiceServer) FindTweetById(arg0 context.Context, arg1 *ssov1.FindTweetByIdRequest) (*ssov1.FindTweetByIdResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindTweetById", arg0, arg1)
-	ret0, _ := ret[0].(*protogen.FindTweetByIdResponse)
+	ret0, _ := ret[0].(*ssov1.FindTweetByIdResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -428,10 +428,10 @@ func (mr *MockCacheServiceServerMockRecorder) FindTweetById(arg0, arg1 any) *gom
 }
 
 // FindUserById mocks base method.
-func (m *MockCacheServiceServer) FindUserById(arg0 context.Context, arg1 *protogen.FindUserByIdRequest) (*protogen.FindUserByIdResponse, error) {
+func (m *MockCacheServiceServer) FindUserById(arg0 context.Context, arg1 *ssov1.FindUserByIdRequest) (*ssov1.FindUserByIdResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindUserById", arg0, arg1)
-	ret0, _ := ret[0].(*protogen.FindUserByIdResponse)
+	ret0, _ := ret[0].(*ssov1.FindUserByIdResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -443,10 +443,10 @@ func (mr *MockCacheServiceServerMockRecorder) FindUserById(arg0, arg1 any) *gomo
 }
 
 // SaveUser mocks base method.
-func (m *MockCacheServiceServer) SaveUser(arg0 context.Context, arg1 *protogen.SaveUserRequest) (*protogen.SaveUserResponse, error) {
+func (m *MockCacheServiceServer) SaveUser(arg0 context.Context, arg1 *ssov1.SaveUserRequest) (*ssov1.SaveUserResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SaveUser", arg0, arg1)
-	ret0, _ := ret[0].(*protogen.SaveUserResponse)
+	ret0, _ := ret[0].(*ssov1.SaveUserResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -458,10 +458,10 @@ func (mr *MockCacheServiceServerMockRecorder) SaveUser(arg0, arg1 any) *gomock.C
 }
 
 // UpdateTweet mocks base method.
-func (m *MockCacheServiceServer) UpdateTweet(arg0 context.Context, arg1 *protogen.UpdateTweetRequest) (*protogen.UpdateTweetResponse, error) {
+func (m *MockCacheServiceServer) UpdateTweet(arg0 context.Context, arg1 *ssov1.UpdateTweetRequest) (*ssov1.UpdateTweetResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTweet", arg0, arg1)
-	ret0, _ := ret[0].(*protogen.UpdateTweetResponse)
+	ret0, _ := ret[0].(*ssov1.UpdateTweetResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

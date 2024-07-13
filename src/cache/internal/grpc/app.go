@@ -8,6 +8,7 @@ import (
 	"github.com/fenek-dev/go-twitter/src/cache/internal/storage/pg"
 	"github.com/fenek-dev/go-twitter/src/cache/internal/storage/redis"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 )
 
@@ -20,7 +21,9 @@ type App struct {
 func New(log *slog.Logger, storage *pg.Postgres, redis *redis.Redis, port int) *App {
 	gRPCServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
 		recovery.UnaryServerInterceptor(),
-	))
+	),
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
+	)
 
 	Register(gRPCServer, storage, redis)
 
