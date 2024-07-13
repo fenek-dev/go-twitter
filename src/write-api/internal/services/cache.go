@@ -9,6 +9,8 @@ import (
 )
 
 func (s *Services) CreateTweet(ctx context.Context, username, content string) (*models.Tweet, error) {
+	ctx, span := s.tracer.Start(ctx, "write.CreateTweet")
+	defer span.End()
 	res, err := s.cache.CreateTweet(ctx, &proto.CreateTweetRequest{
 		Username: username,
 		Content:  content,
@@ -22,6 +24,8 @@ func (s *Services) CreateTweet(ctx context.Context, username, content string) (*
 }
 
 func (s *Services) UpdateTweet(ctx context.Context, id, content string) (*models.Tweet, error) {
+	ctx, span := s.tracer.Start(ctx, "write.UpdateTweet")
+	defer span.End()
 	res, err := s.cache.UpdateTweet(ctx, &proto.UpdateTweetRequest{
 		Id:      id,
 		Content: content,
@@ -35,6 +39,8 @@ func (s *Services) UpdateTweet(ctx context.Context, id, content string) (*models
 }
 
 func (s *Services) DeleteTweet(ctx context.Context, id string) (string, error) {
+	ctx, span := s.tracer.Start(ctx, "write.DeleteTweet")
+	defer span.End()
 	res, err := s.cache.DeleteTweet(ctx, &proto.DeleteTweetRequest{
 		Id: id,
 	})

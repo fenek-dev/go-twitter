@@ -17,14 +17,15 @@ import (
 	"github.com/rs/cors"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
 )
 
 func main() {
 	ctx := context.Background()
 	cfg := config.MustLoad()
 
-	tracer := common.Init(ctx, "write-api")
-
+	tp := common.Init(ctx, "write-api")
+	defer tp.Shutdown(ctx)
 	log := common.SetupLogger(cfg.Env)
 
 	sso, err := sso_grpc.New(cfg.SsoUrl)
@@ -38,6 +39,8 @@ func main() {
 		panic("Could not connect to cache grpc server.")
 	}
 	cache := client.NewService()
+
+	tracer := otel.Tracer("write-api")
 
 	services := services.New(sso_service, cache, tracer)
 
