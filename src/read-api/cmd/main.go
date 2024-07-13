@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,15 +12,21 @@ import (
 	"github.com/fenek-dev/go-twitter/src/read-api/config"
 	"github.com/fenek-dev/go-twitter/src/read-api/internal/handlers"
 	sso_grpc "github.com/fenek-dev/go-twitter/src/sso/pkg/client"
-	"github.com/rs/cors"
+	"github.com/gin-gonic/gin"
+	cors "github.com/rs/cors/wrapper/gin"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel"
+)
+
+const (
+	SERVICE_NAME = "read-api"
 )
 
 func main() {
 	ctx := context.Background()
 	cfg := config.MustLoad()
 
-	tp := common.Init(ctx, "read-api")
+	tp := common.Init(ctx, SERVICE_NAME)
 	defer tp.Shutdown(ctx)
 	log := common.SetupLogger(cfg.Env)
 
@@ -37,24 +42,29 @@ func main() {
 	}
 	sso_service := sso.NewService()
 
-	tracer := otel.Tracer("read-api")
+	tracer := otel.Tracer(SERVICE_NAME)
 
 	handlers := handlers.New(cache, tracer)
 
-	auth_middleware := middlewares.NewAuthMiddleware(sso_service)
+	r := gin.Default()
+	r.Use(otelgin.Middleware(SERVICE_NAME))
 
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("GET /api/v1/me", auth_middleware.Handle(handlers.Me))
-	mux.HandleFunc("GET /api/v1/tweet/{id}", handlers.FindTweetById)
-	mux.HandleFunc("GET /api/v1/user/{id}", handlers.FindUserById)
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
 		AllowCredentials: true,
 	})
-	handler := c.Handler(mux)
+	r.Use(c)
+
+	v1 := r.Group("/api/v1")
+	v1.GET("/tweet/:id", handlers.FindTweetById)
+	v1.POST("/user/:id", handlers.FindUserById)
+
+	auth_middleware := middlewares.NewAuthMiddleware(sso_service)
+	v1s := v1.Group("", auth_middleware.Handle())
+	v1s.GET("/me", handlers.Me)
+
 	go func() {
-		http.ListenAndServe(":"+cfg.Port, handler)
+		r.Run(":" + cfg.Port)
 	}()
 
 	stop := make(chan os.Signal, 1)
