@@ -14,14 +14,15 @@ import (
 	"github.com/fenek-dev/go-twitter/src/read-api/internal/handlers"
 	sso_grpc "github.com/fenek-dev/go-twitter/src/sso/pkg/client"
 	"github.com/rs/cors"
+	"go.opentelemetry.io/otel"
 )
 
 func main() {
 	ctx := context.Background()
 	cfg := config.MustLoad()
 
-	tracer := common.Init(ctx, "read-api")
-
+	tp := common.Init(ctx, "read-api")
+	defer tp.Shutdown(ctx)
 	log := common.SetupLogger(cfg.Env)
 
 	client, err := client.New(cfg.CacheUrl)
@@ -35,6 +36,8 @@ func main() {
 		panic("Could not connect to sso grpc server.")
 	}
 	sso_service := sso.NewService()
+
+	tracer := otel.Tracer("read-api")
 
 	handlers := handlers.New(cache, tracer)
 
