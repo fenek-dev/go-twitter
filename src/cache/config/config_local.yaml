@@ -1,4 +1,4 @@
-port: 8001
+port: 8002
 env: "local"
 db_url: "postgres://user:password@localhost:5432/twitter?sslmode=disable"
 redis:

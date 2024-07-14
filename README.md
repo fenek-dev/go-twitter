@@ -1,3 +1,33 @@
-# go-twitter
+# Todo
 
-`oha -m PUT -H "Cookie: go_twitter_auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXNjcmlwdGlvbiI6IiIsImV4cCI6MTcyMDg4NTExOSwidXNlcm5hbWUiOiJEZXJlY2suUGZlZmZlciJ9.Li9LfzjBKAuje9b8ll_2xBnTlXMnjCFYiMvmZUN-Ajw" -H "Content-Type: application/json" -d '{"username":"Vernie88","content":"Similique sunt nesciunt."}' -c 200 -n 100000 http://localhost:8000/api/v1/tweet`
+- [ ] Caching
+- [ ] DB optimizations
+- [ ] Testing
+- [ ] Rate limiting
+- [ ] Cassandra instead of postgres for tweets
+- [ ] Followers implementation
+- [ ] Likes
+- [ ] Replies
+- [ ] Views count
+- [ ] Simple timeline implementation
+- [ ] Swagger
+- [ ] Frontend
+- [ ] Redis pub/sub
+- [ ] Kafka for notifications
+- [ ] Search (elasticsearch)
+- [ ] Security (https, sql injections)
+- [ ] Docker
+- [ ] Docs
+- [ ] Kubernetes
+- [ ] MiniO
+- [ ] Image/video processing
+- [ ] Recommendation service (optional)
+- [ ] ELK
+- [ ] Prometheus/Grafana
+- [ ] ClickHouse (don't know why yet)
+- [ ] Hadoop/Flink (just to learn what it is)
+- [x] Overengineer things for a simple app
+
+### Notes
+
+- 6.5k rps for create tweet handler (using postgres)
