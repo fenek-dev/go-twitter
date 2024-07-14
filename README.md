@@ -1,3 +1,11 @@
+# Go-Twitter
+
+The main purpose of this project is to create a distributed, scalable system and try out as many technologies and frameworks as possible, which could be useful for work.
+
+### Why twitter?
+
+Twitter is a relatively simple, read-heavy application that can be used for practice purposes.
+
 # Todo
 
 - [ ] Caching
