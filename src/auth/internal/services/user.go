@@ -18,7 +18,7 @@ var (
 )
 
 func (s *Services) RegisterNewUser(ctx context.Context, username string, pass string) (string, error) {
-	const op = "Auth.RegisterNewUser"
+	const op = "auth.service.RegisterNewUser"
 	ctx, span := s.tracer.Start(ctx, op)
 	defer span.End()
 

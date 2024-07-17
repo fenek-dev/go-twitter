@@ -9,7 +9,7 @@ import (
 )
 
 func (p *Postgres) FindUserById(ctx context.Context, id string) (*models.User, error) {
-	const op = "read.tweet.FindUserById"
+	const op = "user.pg.FindUserById"
 	ctx, span := p.tr.Start(ctx, op)
 	defer span.End()
 

@@ -44,7 +44,7 @@ func (s *serverAPI) Login(
 	ctx context.Context,
 	in *proto.LoginRequest,
 ) (*proto.LoginResponse, error) {
-	ctx, span := s.tr.Start(ctx, "sso.grpc.Login")
+	ctx, span := s.tr.Start(ctx, "auth.grpc.Login")
 	defer span.End()
 	if in.Username == "" {
 		return nil, status.Error(codes.InvalidArgument, "username is required")
@@ -70,7 +70,7 @@ func (s *serverAPI) Register(
 	ctx context.Context,
 	in *proto.RegisterRequest,
 ) (*proto.RegisterResponse, error) {
-	ctx, span := s.tr.Start(ctx, "sso.grpc.Register")
+	ctx, span := s.tr.Start(ctx, "auth.grpc.Register")
 	defer span.End()
 	if in.Username == "" {
 		return nil, status.Error(codes.InvalidArgument, "username is required")
@@ -96,7 +96,7 @@ func (s *serverAPI) Verify(
 	ctx context.Context,
 	in *proto.VerifyRequest,
 ) (*proto.VerifyResponse, error) {
-	ctx, span := s.tr.Start(ctx, "sso.grpc.Verify")
+	ctx, span := s.tr.Start(ctx, "auth.grpc.Verify")
 	defer span.End()
 	user, err := s.auth.Verify(ctx, in.Token)
 

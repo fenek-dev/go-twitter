@@ -10,7 +10,7 @@ import (
 )
 
 func (h *Handlers) Register(c *gin.Context) {
-	ctx, span := h.tracer.Start(c.Request.Context(), "write.handler.Register")
+	ctx, span := h.tracer.Start(c.Request.Context(), "auth.handler.Register")
 	defer span.End()
 	var data dto.RegisterDto
 
@@ -35,7 +35,7 @@ func (h *Handlers) Register(c *gin.Context) {
 }
 
 func (h *Handlers) Login(c *gin.Context) {
-	ctx, span := h.tracer.Start(c.Request.Context(), "write.handler.Login")
+	ctx, span := h.tracer.Start(c.Request.Context(), "auth.handler.Login")
 	defer span.End()
 	var data dto.LoginDto
 

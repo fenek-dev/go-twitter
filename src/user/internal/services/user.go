@@ -7,7 +7,7 @@ import (
 )
 
 func (s *Services) FindUserById(ctx context.Context, id string) (*models.User, error) {
-	ctx, span := s.tracer.Start(ctx, "tweet.service.FindTweetById")
+	ctx, span := s.tracer.Start(ctx, "user.service.FindTweetById")
 	defer span.End()
 
 	user, err := s.pg.FindUserById(ctx, id)

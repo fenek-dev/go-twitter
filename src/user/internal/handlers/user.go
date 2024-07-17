@@ -10,7 +10,7 @@ import (
 )
 
 func (h *Handlers) Me(c *gin.Context) {
-	ctx, span := h.tracer.Start(c.Request.Context(), "read.handler.Me")
+	ctx, span := h.tracer.Start(c.Request.Context(), "user.handler.Me")
 	defer span.End()
 	user, ok := ctx.Value(common.REQUEST_CTX_USER).(models.User)
 	if !ok {
@@ -24,7 +24,7 @@ func (h *Handlers) Me(c *gin.Context) {
 
 func (h *Handlers) FindUserById(c *gin.Context) {
 	id := c.Param("id")
-	ctx, span := h.tracer.Start(c.Request.Context(), "read.handler.FindUserById")
+	ctx, span := h.tracer.Start(c.Request.Context(), "user.handler.FindUserById")
 	defer span.End()
 
 	span.SetAttributes(attribute.String("id", id))

@@ -10,7 +10,7 @@ import (
 )
 
 func (p *Postgres) SaveUser(ctx context.Context, username string, passHash []byte) (models.User, error) {
-	const op = "storage.pg.SaveUser"
+	const op = "auth.pg.SaveUser"
 	ctx, span := p.tr.Start(ctx, op)
 	defer span.End()
 
@@ -41,7 +41,7 @@ func (p *Postgres) SaveUser(ctx context.Context, username string, passHash []byt
 }
 
 func (p *Postgres) User(ctx context.Context, username string) (models.User, error) {
-	const op = "storage.pg.User"
+	const op = "auth.pg.User"
 	ctx, span := p.tr.Start(ctx, op)
 	defer span.End()
 
