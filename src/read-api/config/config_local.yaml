@@ -1,4 +1,0 @@
-port: 8001
-env: "local"
-sso_url: "localhost:44044"
-cache_url: "localhost:55055"

@@ -1,0 +1,9 @@
+port: 8000
+env: "local"
+auth_url: "localhost:44044"
+cache_url: "localhost:55055"
+db_url: "postgres://user:password@localhost:5432/twitter?sslmode=disable"
+redis:
+  addr: "localhost:6379"
+  password: "password"
+  db: 0
