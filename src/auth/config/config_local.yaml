@@ -1,0 +1,10 @@
+env: "local"
+port: 4000
+db_url: "postgres://user:password@localhost:5432/twitter?sslmode=disable"
+grpc:
+  port: 44044
+  timeout: 10h
+redis:
+  addr: "localhost:6379"
+  password: "password"
+  db: 0
