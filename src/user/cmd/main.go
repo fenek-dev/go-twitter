@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	auth_grpc "github.com/fenek-dev/go-twitter/src/auth/pkg/client"
+	authgrpc "github.com/fenek-dev/go-twitter/src/auth/pkg/client"
 	"github.com/fenek-dev/go-twitter/src/common"
 	"github.com/fenek-dev/go-twitter/src/common/middlewares"
 	"github.com/fenek-dev/go-twitter/src/user/config"
@@ -33,13 +33,13 @@ func main() {
 	defer tp.Shutdown(ctx)
 	log := common.SetupLogger(cfg.Env)
 
-	auth, err := auth_grpc.New(cfg.AuthUrl)
+	auth, err := authgrpc.New(cfg.AuthUrl)
 	if err != nil {
 		panic("Could not connect to auth grpc server.")
 	}
 	defer auth.Close()
 
-	auth_service := auth.NewService()
+	authService := auth.NewService()
 
 	tracer := otel.Tracer(SERVICE_NAME)
 
@@ -49,11 +49,11 @@ func main() {
 	rdb := redis.New(ctx, &cfg.Redis, tracer)
 	defer rdb.Close()
 
-	services := services.New(auth_service, postgres, rdb, tracer)
+	s := services.New(authService, postgres, rdb, tracer)
 
-	handlers := handlers.New(services, log, tracer)
+	h := handlers.New(s, log, tracer)
 
-	auth_middleware := middlewares.NewAuthMiddleware(auth_service)
+	authMW := middlewares.NewAuthMiddleware(authService)
 
 	r := gin.Default()
 	r.Use(otelgin.Middleware(SERVICE_NAME))
@@ -65,10 +65,10 @@ func main() {
 	r.Use(c)
 
 	v1 := r.Group("/api/v1")
-	v1.GET("/user/:id", handlers.FindUserById)
+	v1.GET("/user/:id", h.FindUserById)
 
-	v1s := v1.Group("", auth_middleware.Handle())
-	v1s.PUT("/me", handlers.Me)
+	v1s := v1.Group("", authMW.Handle())
+	v1s.PUT("/me", h.Me)
 
 	go func() {
 		r.Run(":" + cfg.Port)

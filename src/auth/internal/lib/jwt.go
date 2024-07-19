@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -31,6 +32,10 @@ func GetFromToken(tokenString, secret string) (jwt.MapClaims, error) {
 		}
 		return []byte(secret), nil
 	})
+
+	if token == nil {
+		return nil, errors.New("invalid_token")
+	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil

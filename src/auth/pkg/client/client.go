@@ -12,7 +12,7 @@ type Client struct {
 }
 
 func New(url string) (*Client, error) {
-	var opts []grpc.DialOption = []grpc.DialOption{
+	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	}

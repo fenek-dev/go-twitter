@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS tweets (
   CONSTRAINT fk_user FOREIGN KEY(username) REFERENCES users(username)
 );
 
-CREATE INDEX IF NOT EXIST "idx-tweets-username" ON PUBLIC.tweets USING btree (username)
+CREATE INDEX IF NOT EXISTS "idx-tweets-username" ON PUBLIC.tweets USING btree (username);
 
 CREATE TRIGGER update_tweets_updated_at
 BEFORE UPDATE ON public.tweets

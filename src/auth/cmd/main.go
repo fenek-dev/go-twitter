@@ -41,13 +41,13 @@ func main() {
 
 	service := services.New(storage, rdb, tracer, log, cfg.TokenTTL, cfg.Secret)
 
-	grpc_server := grpc.New(log, service, tracer, cfg.GRPC.Port)
+	grpcServer := grpc.New(log, service, tracer, cfg.GRPC.Port)
 
 	go func() {
-		grpc_server.MustRun()
+		grpcServer.MustRun()
 	}()
 
-	handlers := handlers.New(service, log, tracer)
+	h := handlers.New(service, log, tracer)
 
 	r := gin.Default()
 	r.Use(otelgin.Middleware(SERVICE_NAME))
@@ -59,8 +59,8 @@ func main() {
 	r.Use(c)
 
 	v1 := r.Group("/api/v1")
-	v1.POST("/register", handlers.Register)
-	v1.POST("/login", handlers.Login)
+	v1.POST("/register", h.Register)
+	v1.POST("/login", h.Login)
 
 	go func() {
 		r.Run(":" + cfg.Port)
@@ -71,6 +71,6 @@ func main() {
 
 	<-stop
 
-	grpc_server.Stop()
+	grpcServer.Stop()
 	log.Info("Gracefully stopped")
 }

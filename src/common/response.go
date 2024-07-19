@@ -21,11 +21,7 @@ func NewResponse(code int, message string, data interface{}) *Response {
 
 func SendResponse(w http.ResponseWriter, code int, message string, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
-	response := Response{
-		Code:    code,
-		Message: message,
-		Data:    data,
-	}
+	response := NewResponse(code, message, data)
 
 	resJson, err := json.Marshal(response)
 	if err != nil {
@@ -33,5 +29,8 @@ func SendResponse(w http.ResponseWriter, code int, message string, data interfac
 	}
 
 	w.WriteHeader(code)
-	w.Write(resJson)
+	_, err = w.Write(resJson)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
