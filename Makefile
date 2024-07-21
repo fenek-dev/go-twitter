@@ -4,13 +4,13 @@ protogen:
 	export PATH="$PATH:$(go env GOPATH)/bin" && protoc -I proto proto/twitter.proto --go_out=./proto/protogen/ --go_opt=paths=source_relative --go-grpc_out=./proto/protogen/ --go-grpc_opt=paths=source_relative && mockgen -source=proto/protogen/twitter_grpc.pb.go -destination=proto/protogen/mocks/twitter_mock.go
 
 auth:
-	go run src/auth/cmd/main.go --config=src/auth/config/config_local.yaml
+	cd ./src/auth && air -- --config=config/config_local.yaml
 
 tweet:
-	go run src/tweet/cmd/main.go --config=src/tweet/config/config_local.yaml
+	cd ./src/tweet && air -- --config=config/config_local.yaml
 
 user:
-	go run src/user/cmd/main.go --config=src/user/config/config_local.yaml
+	cd ./src/user && air -- --config=config/config_local.yaml
 
 # redis
 redis-up:
