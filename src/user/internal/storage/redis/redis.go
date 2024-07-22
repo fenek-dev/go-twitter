@@ -26,6 +26,6 @@ func New(ctx context.Context, cfg *config.RedisConfig, tr trace.Tracer) *Redis {
 	}
 }
 
-func (p *Redis) Close() error {
-	return p.conn.Close()
+func (r *Redis) Close() error {
+	return r.conn.Close()
 }

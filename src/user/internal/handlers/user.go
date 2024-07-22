@@ -23,9 +23,9 @@ func (h *Handlers) Me(c *gin.Context) {
 }
 
 func (h *Handlers) FindUserById(c *gin.Context) {
-	id := c.Param("id")
 	ctx, span := h.tracer.Start(c.Request.Context(), "user.handler.FindUserById")
 	defer span.End()
+	id := c.Param("id")
 
 	span.SetAttributes(attribute.String("id", id))
 
