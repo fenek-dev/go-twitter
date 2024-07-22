@@ -5,6 +5,7 @@ import (
 	"github.com/fenek-dev/go-twitter/src/common/models"
 	"github.com/golang-jwt/jwt/v5"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"time"
 )
 
 func UserModelToProtoUser(user *models.User) *proto.User {
@@ -26,8 +27,15 @@ func ProtoUserToModel(user *proto.User) *models.User {
 }
 
 func ClaimsToUserModel(claims jwt.MapClaims) *models.User {
+
+	createdAt, _ := time.Parse(time.RFC3339, claims["created_at"].(string))
+	updatedAt, _ := time.Parse(time.RFC3339, claims["updated_at"].(string))
+
 	return &models.User{
+		Id:          claims["id"].(string),
 		Username:    claims["username"].(string),
 		Description: claims["description"].(string),
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
 	}
 }

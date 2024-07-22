@@ -12,11 +12,13 @@ import (
 func NewToken(user models.User, secret string, duration time.Duration) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
+			"id":          user.Id,
 			"username":    user.Username,
 			"description": user.Description,
+			"created_at":  user.CreatedAt.Format(time.RFC3339),
+			"updated_at":  user.UpdatedAt.Format(time.RFC3339),
 			"exp":         time.Now().Add(duration).Unix(),
 		})
-
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
 		return "", err
