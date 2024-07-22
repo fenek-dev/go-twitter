@@ -68,7 +68,7 @@ func main() {
 	v1.GET("/user/:id", h.FindUserById)
 
 	v1s := v1.Group("", authMW.Handle())
-	v1s.PUT("/me", h.Me)
+	v1s.GET("/me", h.Me)
 
 	go func() {
 		r.Run(":" + cfg.Port)
