@@ -4,23 +4,9 @@ import (
 	"net/http"
 
 	"github.com/fenek-dev/go-twitter/src/common"
-	"github.com/fenek-dev/go-twitter/src/common/models"
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel/attribute"
 )
-
-func (h *Handlers) Me(c *gin.Context) {
-	ctx, span := h.tracer.Start(c.Request.Context(), "user.handler.Me")
-	defer span.End()
-	user, ok := ctx.Value(common.REQUEST_CTX_USER).(models.User)
-	if !ok {
-		common.SendResponse(c.Writer, http.StatusInternalServerError, "Something gone wrong", nil)
-		return
-	}
-	span.SetAttributes(attribute.String("id", user.Username))
-
-	common.SendResponse(c.Writer, http.StatusOK, "ok", user)
-}
 
 func (h *Handlers) FindUserById(c *gin.Context) {
 	ctx, span := h.tracer.Start(c.Request.Context(), "user.handler.FindUserById")

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/fenek-dev/go-twitter/src/auth/internal/http/middlewares"
 	"os"
 	"os/signal"
 	"syscall"
@@ -61,6 +62,9 @@ func main() {
 	v1 := r.Group("/api/v1")
 	v1.POST("/register", h.Register)
 	v1.POST("/login", h.Login)
+
+	v1s := v1.Group("", middlewares.Auth(service))
+	v1s.GET("/me", h.Me)
 
 	go func() {
 		r.Run(":" + cfg.Port)

@@ -8,7 +8,6 @@ import (
 
 	authgrpc "github.com/fenek-dev/go-twitter/src/auth/pkg/client"
 	"github.com/fenek-dev/go-twitter/src/common"
-	"github.com/fenek-dev/go-twitter/src/common/middlewares"
 	"github.com/fenek-dev/go-twitter/src/user/config"
 	"github.com/fenek-dev/go-twitter/src/user/internal/handlers"
 	"github.com/fenek-dev/go-twitter/src/user/internal/services"
@@ -53,8 +52,6 @@ func main() {
 
 	h := handlers.New(s, log, tracer)
 
-	authMW := middlewares.NewAuthMiddleware(authService)
-
 	r := gin.Default()
 	r.Use(otelgin.Middleware(SERVICE_NAME))
 
@@ -66,9 +63,6 @@ func main() {
 
 	v1 := r.Group("/api/v1")
 	v1.GET("/user/:id", h.FindUserById)
-
-	v1s := v1.Group("", authMW.Handle())
-	v1s.GET("/me", h.Me)
 
 	go func() {
 		r.Run(":" + cfg.Port)

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/fenek-dev/go-twitter/src/common/middlewares"
 	"net/http"
 
 	"github.com/fenek-dev/go-twitter/src/auth/internal/dto"
@@ -8,6 +9,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel/attribute"
 )
+
+func (h *Handlers) Me(c *gin.Context) {
+	_, span := h.tracer.Start(c.Request.Context(), "auth.handler.Me")
+	defer span.End()
+
+	user, ok := middlewares.UserFromCtx(c)
+	if !ok {
+		common.SendResponse(c.Writer, http.StatusInternalServerError, "Something gone wrong", nil)
+		return
+	}
+	span.SetAttributes(attribute.String("id", user.Username))
+
+	common.SendResponse(c.Writer, http.StatusOK, "ok", user)
+}
 
 func (h *Handlers) Register(c *gin.Context) {
 	ctx, span := h.tracer.Start(c.Request.Context(), "auth.handler.Register")
