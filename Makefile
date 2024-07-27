@@ -1,5 +1,11 @@
 PROJECTNAME=$(shell basename "$(PWD)")
 
+services:
+	make -j 3 auth tweet user
+
+db:
+	make -j 3 db-up redis-up cassandra-up
+
 protogen:
 	export PATH="$PATH:$(go env GOPATH)/bin" && protoc -I proto proto/twitter.proto --go_out=./proto/protogen/ --go_opt=paths=source_relative --go-grpc_out=./proto/protogen/ --go-grpc_opt=paths=source_relative && mockgen -source=proto/protogen/twitter_grpc.pb.go -destination=proto/protogen/mocks/twitter_mock.go
 
