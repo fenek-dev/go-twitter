@@ -7,13 +7,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func New(ctx context.Context, DBUrl string, maxConns int32) *pgxpool.Pool {
+func New(ctx context.Context, DBUrl string, maxConn int32) *pgxpool.Pool {
 
 	cfg, err := pgxpool.ParseConfig(DBUrl)
 	if err != nil {
 		panic(fmt.Sprintf("can not parse db config: %s", err.Error()))
 	}
-	cfg.MaxConns = maxConns
+	cfg.MaxConns = maxConn
 
 	conn, err := pgxpool.New(ctx, DBUrl)
 

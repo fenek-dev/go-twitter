@@ -8,8 +8,8 @@ Twitter is a relatively simple, read-heavy application that can be used for prac
 
 # Todo
 
-- [ ] Caching
-- [ ] DB optimizations
+- [x] Caching
+- [x] DB optimizations
 - [ ] Testing
 - [ ] Rate limiting
 - [ ] Cassandra instead of postgres for tweets
