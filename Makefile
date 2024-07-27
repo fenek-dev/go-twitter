@@ -12,6 +12,14 @@ tweet:
 user:
 	cd ./src/user && air -- --config=config/config_local.yaml
 
+cassandra-up:
+	docker compose -f=docker/docker-compose.cassandra.yaml -p=cassandra_twitter up
+cassandra-down:
+	docker compose -f=docker/docker-compose.cassandra.yaml -p=cassandra_twitter down
+cassandra-migrate:
+	docker cp migrations/cassandra/init.cql cassandra1:/init.cql && \
+	docker exec -it cassandra1 cqlsh -f /init.cql
+
 # redis
 redis-up:
 	docker compose -f=docker/docker-compose.redis.yaml -p=redis_twitter up
