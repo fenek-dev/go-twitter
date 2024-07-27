@@ -7,7 +7,14 @@ db:
 	make -j 3 db-up redis-up cassandra-up
 
 protogen:
-	export PATH="$PATH:$(go env GOPATH)/bin" && protoc -I proto proto/twitter.proto --go_out=./proto/protogen/ --go_opt=paths=source_relative --go-grpc_out=./proto/protogen/ --go-grpc_opt=paths=source_relative && mockgen -source=proto/protogen/twitter_grpc.pb.go -destination=proto/protogen/mocks/twitter_mock.go
+	export PATH="$PATH:$(go env GOPATH)/bin" && protoc -I proto proto/twitter.proto --go_out=./proto/protogen/ --go_opt=paths=source_relative --go-grpc_out=./proto/protogen/ --go-grpc_opt=paths=source_relative
+
+mockgen:
+	mockery --dir=proto/protogen --output=proto/protogen/mocks --outpkg=proto_mocks --all && \
+	cd src && \
+	mockery --dir=auth --output=auth/mocks --outpkg=mocks --all && \
+	mockery --dir=tweet --output=tweet/mocks --outpkg=mocks --all && \
+	mockery --dir=user --output=user/mocks --outpkg=mocks --all
 
 auth:
 	cd ./src/auth && air -- --config=config/config_local.yaml
