@@ -1,26 +1,31 @@
 package services
 
 import (
-	ssov1 "github.com/fenek-dev/go-twitter/proto/protogen"
-	"github.com/fenek-dev/go-twitter/src/tweet/internal/storage/pg"
-	"github.com/fenek-dev/go-twitter/src/tweet/internal/storage/redis"
-
+	"context"
+	"github.com/fenek-dev/go-twitter/src/common/models"
 	"go.opentelemetry.io/otel/trace"
 )
 
-type Services struct {
-	sso ssov1.AuthServiceClient
+type Postgres interface {
+	FindTweetById(ctx context.Context, id string) (*models.Tweet, error)
+	CreateTweet(ctx context.Context, username, content string) (*models.Tweet, error)
+	UpdateTweet(ctx context.Context, id, content string) (*models.Tweet, error)
+	DeleteTweet(ctx context.Context, id string) error
+}
 
-	pg  *pg.Postgres
-	rdb *redis.Redis
+type Redis interface {
+}
+
+type Services struct {
+	pg  Postgres
+	rdb Redis
 
 	tracer trace.Tracer
 }
 
-func New(sso ssov1.AuthServiceClient, pg *pg.Postgres, rdb *redis.Redis,
+func New(pg Postgres, rdb Redis,
 	tracer trace.Tracer) *Services {
 	return &Services{
-		sso:    sso,
 		pg:     pg,
 		rdb:    rdb,
 		tracer: tracer,

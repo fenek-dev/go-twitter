@@ -49,7 +49,7 @@ func main() {
 	rdb := redis.New(ctx, &cfg.Redis, tracer)
 	defer rdb.Close()
 
-	s := services.New(authService, postgres, rdb, tracer)
+	s := services.New(postgres, rdb, tracer)
 
 	h := handlers.New(s, log, tracer)
 
