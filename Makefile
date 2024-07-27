@@ -1,5 +1,8 @@
 PROJECTNAME=$(shell basename "$(PWD)")
 
+all:
+	make -j 2 services db
+
 services:
 	make -j 3 auth tweet user
 
