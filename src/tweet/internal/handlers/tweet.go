@@ -39,8 +39,8 @@ func (h *Handlers) CreateTweet(c *gin.Context) {
 	var data *dto.CreateDto
 
 	user, ok := middlewares.UserFromCtx(c)
-	if !ok {
-		common.SendResponse(c.Writer, http.StatusInternalServerError, "Could not get user from context", nil)
+	if !ok || user == nil {
+		common.SendResponse(c.Writer, http.StatusInternalServerError, ErrCanNotGetUser.Error(), nil)
 		return
 	}
 
